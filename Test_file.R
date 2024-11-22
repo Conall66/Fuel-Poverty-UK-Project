@@ -8,3 +8,4 @@
 # Wouldn't want to be you
 
 # Syke I have a chode
+# Hamzah has one too
