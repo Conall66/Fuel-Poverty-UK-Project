@@ -16,6 +16,7 @@ library(janitor) # cleans data sets (converts from single object to flattened ta
 
 # Plotting
 library(treemap)
+library(shiny)
 
 # Key Data sets Import -----------------------------------------------------
 

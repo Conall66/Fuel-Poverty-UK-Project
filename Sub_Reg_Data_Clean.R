@@ -15,6 +15,8 @@ library(janitor) # cleans data sets (converts from single object to flattened ta
 
 # Plotting
 library(treemap)
+library(shiny)
+library(sf)
 
 # Key Data sets Import -----------------------------------------------------
 
@@ -42,6 +44,7 @@ if (!dir.exists("Sub_Reg_extrcsv")) {
   dir.create("Sub_Reg_extrcsv")
 }
 
+# DO NOT HAVE EXCEL FILES OPEN WHILST RUNNING
 for(file in Sub_Reg_Files){
   
   file_name <- paste("Sub_Reg_Data", file_yr, ".csv", sep = "_")
@@ -57,5 +60,33 @@ for(file in Sub_Reg_Files){
   # Create new csv file with only useful info
   write.csv(file_sht, file_path)
   file_yr <- file_yr + 1
+  
+  # num_rows <- nrow(file_sht)
+  # # Print the number of rows for the current file
+  # print(paste("File:", file, "has", num_rows, "rows"))
+  
 }
+
+# Comparing Datasets ------------------------------------------------------
+
+# Check the sub-regional datasets have no missing data
+# Check area codes and transpose to match
+
+
+# Area Code Scale Up ------------------------------------------------------
+
+# Concerting area code to district, to county etc. for expanding out
+
+
+# Mapping -----------------------------------------------------------------
+
+# Create a map with each postcode highlighted in colour communicating proportion
+# living in fuel poverty with year slider (moving between datasets)
+
+uk_shape <- 
+
+# Predictive Analytics ----------------------------------------------------
+
+# Determine the most appropriate way to map changes in fuel poverty going forward
+
 
