@@ -6,6 +6,7 @@
 
 # Read data
 library(rio)
+library(readxl)
 
 # To clean data
 library(tidyverse)
@@ -33,14 +34,28 @@ Sub_Reg_Data_22 <- read_xlsx(Sub_Reg_Files[length(Sub_Reg_Files)], sheet = "Tabl
 Area_Codes <- Sub_Reg_Data_22[3:nrow(Sub_Reg_Data_22), 1] #First column is area codes
 # Extract first 2 columns as empty text
 
-
 # Extract useful information on fuel poverty data by area code per dataset
-for(file in Sub_Reg_Files){
-  # Extract year from title of file
-  file_yr <- str_extract(file, "\\b(19|20)\\d{2}\\b")
-  # Navigate to correct sheet
-  # Extract information by area code for fuel poverty
-  # Create new csv file with only useful info
+file_yr <- 2011 # Initialise year
+
+# Create the folder if it doesn't already exist
+if (!dir.exists("Sub_Reg_extrcsv")) {
+  dir.create("Sub_Reg_extrcsv")
 }
 
+for(file in Sub_Reg_Files){
+  
+  file_name <- paste("Sub_Reg_Data", file_yr, ".csv", sep = "_")
+  file_path <- file.path("Sub_Reg_extrcsv", file_name)
+  
+  # Navigate to correct sheet
+  if(file_yr == 2011){
+    file_sht <- read_xlsx(file, "Local Authority") #Called something different for 2011
+  } else{
+    file_sht <- read_xlsx(file, "Table 2")
+  }
+  # Extract information by area code for fuel poverty
+  # Create new csv file with only useful info
+  write.csv(file_sht, file_path)
+  file_yr <- file_yr + 1
+}
 
