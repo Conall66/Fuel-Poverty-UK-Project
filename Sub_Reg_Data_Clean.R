@@ -34,7 +34,13 @@ Area_Codes <- Sub_Reg_Data_22[3:nrow(Sub_Reg_Data_22), 1] #First column is area 
 # Extract first 2 columns as empty text
 
 
-
-
+# Extract useful information on fuel poverty data by area code per dataset
+for(file in Sub_Reg_Files){
+  # Extract year from title of file
+  file_yr <- str_extract(file, "\\b(19|20)\\d{2}\\b")
+  # Navigate to correct sheet
+  # Extract information by area code for fuel poverty
+  # Create new csv file with only useful info
+}
 
 
