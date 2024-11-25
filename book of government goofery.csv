@@ -1,0 +1,26 @@
+﻿local-authority-code,official-name,prev-gss-code,end-date,replaced-by,replaced-by-gss,nation,region
+CHC,Christchurch Borough Council,E07000048,2019-03-31,BPC,E06000058,England,
+DOR,Dorset County Council,E10000009,2019-03-31,DST,E06000059,England,South West
+EDO,East Dorset District Council,E07000049,2019-03-31,DST,E06000059,England,
+FOR,Forest Heath District Council,E07000201,2019-03-31,WSK,E07000245,England,
+NDO,North Dorset District Council,E07000050,2019-03-31,DST,E06000059,England,
+PUR,Purbeck District Council,E07000051,2019-03-31,DST,E06000059,England,
+SED,St Edmundsbury Borough Council,E07000204,2019-03-31,WSK,E07000245,England,
+SUF,Suffolk Coastal District Council,E07000205,2019-03-31,ESK,E07000244,England,
+TAU,Taunton Deane Borough Council,E07000190,2019-03-31,SWT,E07000246,England,
+WAV,Waveney District Council,E07000206,2019-03-31,ESK,E07000244,England,
+WDO,West Dorset District Council,E07000052,2019-03-31,DST,E06000059,England,
+WEY,Weymouth and Portland Borough Council,E07000053,2019-03-31,DST,E06000059,England,South West
+WSO,West Somerset District Council,E07000191,2019-03-31,SWT,E07000246,England,
+AYL,Aylesbury Vale District Council,E07000004,2020-03-31,BUC,E06000060,England,South East
+CHN,Chiltern District Council,E07000005,2020-03-31,BUC,E06000060,England,South East
+SBU,South Bucks District Council,E07000006,2020-03-31,BUC,E06000060,England,South East
+WYO,Wycombe District Council,E07000007,2020-03-31,BUC,E06000060,England,South East
+COR,Corby Borough Council,E07000150,2021-04-01,NNT,E06000061,England,East Midlands
+DAV,Daventry District Council,E07000151,2021-04-01,WNT,E06000062,England,East Midlands
+ENO,East Northamptonshire Council,E07000152,2021-04-01,NNT,E06000061,England,East Midlands
+KET,Kettering Borough Council,E07000153,2021-04-01,NNT,E06000061,England,
+NOR,Northampton Borough Council,E07000154,2021-04-01,WNT,E06000062,England,East Midlands
+NTH,Northamptonshire County Council,E10000021,2021-04-01,"NNT,WNT",E06000061 / E06000062,England,East Midlands
+SNR,South Northamptonshire Council,E07000155,2021-04-01,WNT,E06000062,England,East Midlands
+WEL,Wellingborough Borough Council,E07000156,2021-04-01,NNT,E06000061,England,East Midlands
