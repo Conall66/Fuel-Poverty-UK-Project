@@ -49,3 +49,5 @@ mortality_data <- read_xlsx("wintermortalityreferencetable.xlsx",
 # Check the column names to verify we have the right years
 names(mortality_data)
 
+write.csv(mortality_data, "mortality_data.csv", row.names = FALSE)
+
