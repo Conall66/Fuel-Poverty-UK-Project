@@ -18,13 +18,12 @@ uk_boundaries_with_data <- la_boundaries %>%
 # Plot with standardized values for better color spread
 gg <- ggplot() + 
   geom_sf(data = uk_boundaries_with_data, 
-          aes(fill = scale(`Winter mortality index 2011/2012`)), 
+          aes(fill = scale(`Winter.mortality.index..2011.2012`)), 
           color = "white", 
           size = 0.25) +
   scale_fill_gradient2(low = "blue", mid = "red", high = "yellow", 
                        na.value = "white") +
   theme_void()
-
 
 
 # To see the data structure:
