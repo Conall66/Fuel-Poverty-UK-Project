@@ -9,7 +9,7 @@ la_boundaries <- st_read("Local_Authority_Districts_December_2022_UK_BGC_V2_8602
 # Function to create map for a specific year
 create_fuel_poverty_map <- function(year) {
   # Read the data for the specific year
-  filename <- paste0("Consistent Area Codes/Sub_Reg_Data_", year, "_Updated.csv")
+  filename <- paste0("Final Data Cleaned/Sub_Reg_Data_", year, "_LILEE.csv")
   
   # Read CSV
   fuel_data <- read.csv(filename)
