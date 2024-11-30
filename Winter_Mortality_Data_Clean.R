@@ -18,6 +18,12 @@ library(janitor) # cleans data sets (converts from single object to flattened ta
 library(treemap)
 library(shiny)
 
+
+# Program File ------------------------------------------------------------
+
+# Extracting winter mortality index by region and year
+# Winter mortality index 
+
 mortality_data <- read_xlsx("wintermortalityreferencetable.xlsx", 
                             sheet = "Table_10",
                             skip = 5) %>%
@@ -49,5 +55,5 @@ mortality_data <- read_xlsx("wintermortalityreferencetable.xlsx",
 # Check the column names to verify we have the right years
 names(mortality_data)
 
-write.csv(mortality_data, "mortality_data.csv", row.names = FALSE)
+write.csv(mortality_data, "mortality_data.csv", row.names = TRUE)
 
