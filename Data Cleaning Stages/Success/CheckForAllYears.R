@@ -14,7 +14,7 @@ get_codes <- function(file_path) {
 
 # Get codes from all years
 codes_list <- list()
-for(year in 2011:2020) {
+for(year in 2011:2021) {
   filename <- paste0("Consistent Area Codes/Sub_Reg_Data_", year, "_Updated.csv")
   codes_list[[as.character(year)]] <- get_codes(filename)
 }
@@ -101,7 +101,7 @@ get_codes <- function(file_path) {
 
 # Get codes from all years
 codes_list <- list()
-for(year in 2011:2020) {
+for(year in 2011:2021) {
   filename <- paste0("Sub_Reg_Data_", year, "_Updated.csv")
   codes_list[[as.character(year)]] <- get_codes(filename)
 }

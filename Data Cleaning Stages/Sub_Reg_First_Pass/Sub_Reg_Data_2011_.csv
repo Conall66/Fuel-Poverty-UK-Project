@@ -1,329 +1,324 @@
-"","Fuel Poverty in Local Authorities","...2","...3","...4","...5","...6"
-"1",NA,NA,NA,NA,NA,NA
-"2","LA Code","LA Name","English region","All Households","Fuel Poor Households","Percent Fuel Poor"
-"3","00AA","City of London","London","4782","120","2.5000000000000001E-2"
-"4","00AB","Barking and Dagenham","London","67697","6678","9.9000000000000005E-2"
-"5","00AC","Barnet","London","129022","16235","0.126"
-"6","00AD","Bexley","London","87786","9869","0.112"
-"7","00AE","Brent","London","102836","12415","0.121"
-"8","00AF","Bromley","London","125396","13299","0.106"
-"9","00AG","Camden","London","94565","8138","8.5999999999999993E-2"
-"10","00AH","Croydon","London","140659","15196","0.108"
-"11","00AJ","Ealing","London","120090","14425","0.12"
-"12","00AK","Enfield","London","111728","12345","0.11"
-"13","00AL","Greenwich","London","98384","7986","8.1000000000000003E-2"
-"14","00AM","Hackney","London","93240","6326","6.8000000000000005E-2"
-"15","00AN","Hammersmith and Fulham","London","76561","7707","0.10100000000000001"
-"16","00AP","Haringey","London","95302","10632","0.112"
-"17","00AQ","Harrow","London","79983","10174","0.127"
-"18","00AR","Havering","London","92429","9924","0.107"
-"19","00AS","Hillingdon","London","96885","10536","0.109"
-"20","00AT","Hounslow","London","87673","9441","0.108"
-"21","00AU","Islington","London","91620","6084","6.6000000000000003E-2"
-"22","00AW","Kensington and Chelsea","London","78723","7932","0.10100000000000001"
-"23","00AX","Kingston upon Thames","London","61659","7392","0.12"
-"24","00AY","Lambeth","London","123021","9200","7.4999999999999997E-2"
-"25","00AZ","Lewisham","London","107982","8853","8.2000000000000003E-2"
-"26","00BA","Merton","London","79478","8788","0.111"
-"27","00BB","Newham","London","97251","11027","0.113"
-"28","00BC","Redbridge","London","94678","11350","0.12"
-"29","00BD","Richmond upon Thames","London","76050","8433","0.111"
-"30","00BE","Southwark","London","111599","5545","0.05"
-"31","00BF","Sutton","London","76598","7654","0.1"
-"32","00BG","Tower Hamlets","London","95191","3575","3.7999999999999999E-2"
-"33","00BH","Waltham Forest","London","89810","10568","0.11799999999999999"
-"34","00BJ","Wandsworth","London","120437","10394","8.5999999999999993E-2"
-"35","00BK","Westminster","London","93571","7804","8.3000000000000004E-2"
-"36","00BL","Bolton","North West","114929","13103","0.114"
-"37","00BM","Bury","North West","78340","9699","0.124"
-"38","00BN","Manchester","North West","188232","24970","0.13300000000000001"
-"39","00BP","Oldham","North West","89738","10136","0.113"
-"40","00BQ","Rochdale","North West","85779","9888","0.115"
-"41","00BR","Salford","North West","101252","11277","0.111"
-"42","00BS","Stockport","North West","124457","15274","0.123"
-"43","00BT","Tameside","North West","94520","11211","0.11899999999999999"
-"44","00BU","Trafford","North West","94513","12355","0.13100000000000001"
-"45","00BW","Wigan","North West","133814","15056","0.113"
-"46","00BX","Knowsley","North West","62840","6211","9.9000000000000005E-2"
-"47","00BY","Liverpool","North West","196563","27689","0.14099999999999999"
-"48","00BZ","St. Helens","North West","76911","8720","0.113"
-"49","00CA","Sefton","North West","121187","17425","0.14399999999999999"
-"50","00CB","Wirral","North West","138678","18708","0.13500000000000001"
-"51","00CC","Barnsley","Yorkshire and the Humber","102298","11175","0.109"
-"52","00CE","Doncaster","Yorkshire and the Humber","127619","14516","0.114"
-"53","00CF","Rotherham","Yorkshire and the Humber","110636","11160","0.10100000000000001"
-"54","00CG","Sheffield","Yorkshire and the Humber","234605","25899","0.11"
-"55","00CH","Gateshead","North East","90472","9890","0.109"
-"56","00CJ","Newcastle upon Tyne","North East","116730","14149","0.121"
-"57","00CK","North Tyneside","North East","91679","9793","0.107"
-"58","00CL","South Tyneside","North East","69760","7140","0.10199999999999999"
-"59","00CM","Sunderland","North East","121556","14482","0.11899999999999999"
-"60","00CN","Birmingham","West Midlands","407865","63158","0.155"
-"61","00CQ","Coventry","West Midlands","128258","20085","0.157"
-"62","00CR","Dudley","West Midlands","129756","16668","0.128"
-"63","00CS","Sandwell","West Midlands","120649","16921","0.14000000000000001"
-"64","00CT","Solihull","West Midlands","85555","9909","0.11600000000000001"
-"65","00CU","Walsall","West Midlands","104830","13686","0.13100000000000001"
-"66","00CW","Wolverhampton","West Midlands","99664","14770","0.14799999999999999"
-"67","00CX","Bradford","Yorkshire and the Humber","198766","25050","0.126"
-"68","00CY","Calderdale","Yorkshire and the Humber","90018","10870","0.121"
-"69","00CZ","Kirklees","Yorkshire and the Humber","175184","20074","0.115"
-"70","00DA","Leeds","Yorkshire and the Humber","336974","37137","0.11"
-"71","00DB","Wakefield","Yorkshire and the Humber","144946","13575","9.4E-2"
-"72","00EB","Hartlepool","North East","40743","5234","0.128"
-"73","00EC","Middlesbrough","North East","57741","8972","0.155"
-"74","00EE","Redcar and Cleveland","North East","60876","7889","0.13"
-"75","00EF","Stockton-on-Tees","North East","80765","9517","0.11799999999999999"
-"76","00EH","Darlington","North East","47470","6973","0.14699999999999999"
-"77","00EJ","Durham UA","North East","227622","29702","0.13"
-"78","00EM","Northumberland UA","North East","141779","17943","0.127"
-"79","00EQ","Cheshire East UA","North West","158607","18469","0.11600000000000001"
-"80","00ET","Halton","North West","51423","4951","9.6000000000000002E-2"
-"81","00EU","Warrington","North West","86246","8720","0.10100000000000001"
-"82","00EW","Cheshire West and Chester UA and Chester UA","North West","141703","15790","0.111"
-"83","00EX","Blackburn with Darwen","North West","55050","7367","0.13400000000000001"
-"84","00EY","Blackpool","North West","67572","12143","0.18"
-"85","00FA","Kingston upon Hull, City of","Yorkshire and the Humber","109620","11567","0.106"
-"86","00FB","East Riding of Yorkshire","Yorkshire and the Humber","146642","14827","0.10100000000000001"
-"87","00FC","North East Lincolnshire","Yorkshire and the Humber","70457","8518","0.121"
-"88","00FD","North Lincolnshire","Yorkshire and the Humber","71568","7095","9.9000000000000005E-2"
-"89","00FF","York","Yorkshire and the Humber","84708","9323","0.11"
-"90","00FK","Derby","East Midlands","99057","14486","0.14599999999999999"
-"91","00FN","Leicester","East Midlands","121269","19733","0.16300000000000001"
-"92","00FP","Rutland","East Midlands","15258","2078","0.13600000000000001"
-"93","00FY","Nottingham","East Midlands","127987","19505","0.152"
-"94","00GA","Herefordshire, County of","West Midlands","80661","11660","0.14499999999999999"
-"95","00GF","Telford and Wrekin","West Midlands","68678","7221","0.105"
-"96","00GG","Shropshire UA","West Midlands","127526","18904","0.14799999999999999"
-"97","00GL","Stoke-on-Trent","West Midlands","107771","16625","0.154"
-"98","00HA","Bath and North East Somerset","South West","73053","7459","0.10199999999999999"
-"99","00HB","Bristol, City of","South West","174914","19733","0.113"
-"100","00HC","North Somerset","South West","89324","7720","8.5999999999999993E-2"
-"101","00HD","South Gloucestershire","South West","104974","7957","7.5999999999999998E-2"
-"102","00HE","Cornwall UA","South West","234519","23799","0.10100000000000001"
-"103","00HF","Isles of Scilly UA","South West","934","76","8.1000000000000003E-2"
-"104","00HG","Plymouth","South West","107087","10897","0.10199999999999999"
-"105","00HH","Torbay","South West","61256","7006","0.114"
-"106","00HN","Bournemouth","South West","79593","8886","0.112"
-"107","00HP","Poole","South West","62585","5332","8.5000000000000006E-2"
-"108","00HX","Swindon","South West","86002","6361","7.3999999999999996E-2"
-"109","00HY","Wiltshire UA","South West","191818","15873","8.3000000000000004E-2"
-"110","00JA","Peterborough","East of England","73673","7588","0.10299999999999999"
-"111","00KA","Luton","East of England","75137","9639","0.128"
-"112","00KB","Bedford UA","East of England","64929","7349","0.113"
-"113","00KC","Central Bedfordshire UA","East of England","105061","9616","9.1999999999999998E-2"
-"114","00KF","Southend-on-Sea","East of England","74529","9530","0.128"
-"115","00KG","Thurrock","East of England","64362","5303","8.2000000000000003E-2"
-"116","00LC","Medway","South East","105749","9476","0.09"
-"117","00MA","Bracknell Forest","South East","46179","2317","0.05"
-"118","00MB","West Berkshire","South East","63350","4289","6.8000000000000005E-2"
-"119","00MC","Reading","South East","63853","6842","0.107"
-"120","00MD","Slough","South East","49361","3681","7.4999999999999997E-2"
-"121","00ME","Windsor and Maidenhead","South East","57319","4448","7.8E-2"
-"122","00MF","Wokingham","South East","61349","3856","6.3E-2"
-"123","00MG","Milton Keynes","South East","97018","4887","0.05"
-"124","00ML","Brighton and Hove","South East","119169","13524","0.113"
-"125","00MR","Portsmouth","South East","84415","9006","0.107"
-"126","00MS","Southampton","South East","99405","9743","9.8000000000000004E-2"
-"127","00MW","Isle of Wight","South East","63059","6271","9.9000000000000005E-2"
-"128","11UB","Aylesbury Vale","South East","70888","5027","7.0999999999999994E-2"
-"129","11UC","Chiltern","South East","36510","2947","8.1000000000000003E-2"
-"130","11UE","South Buckinghamshire","South East","25879","2014","7.8E-2"
-"131","11UF","Wycombe","South East","66970","5341","0.08"
-"132","12UB","Cambridge","East of England","47466","7493","0.158"
-"133","12UC","East Cambridgeshire","East of England","35516","3344","9.4E-2"
-"134","12UD","Fenland","East of England","40850","4338","0.106"
-"135","12UE","Huntingdonshire","East of England","69308","5482","7.9000000000000001E-2"
-"136","12UG","South Cambridgeshire","East of England","60150","5602","9.2999999999999999E-2"
-"137","16UB","Allerdale","North West","41574","4809","0.11600000000000001"
-"138","16UC","Barrow-in-Furness","North West","31484","4788","0.152"
-"139","16UD","Carlisle","North West","47185","5809","0.123"
-"140","16UE","Copeland","North West","30928","3415","0.11"
-"141","16UF","Eden","North West","23043","2794","0.121"
-"142","16UG","South Lakeland","North West","46721","6030","0.129"
-"143","17UB","Amber Valley","East Midlands","52709","7691","0.14599999999999999"
-"144","17UC","Bolsover","East Midlands","32339","4496","0.13900000000000001"
-"145","17UD","Chesterfield","East Midlands","46748","6053","0.129"
-"146","17UF","Derbyshire Dales","East Midlands","31130","4421","0.14199999999999999"
-"147","17UG","Erewash","East Midlands","48917","6648","0.13600000000000001"
-"148","17UH","High Peak","East Midlands","40125","5838","0.14499999999999999"
-"149","17UJ","North East Derbyshire","East Midlands","42992","4883","0.114"
-"150","17UK","South Derbyshire","East Midlands","38439","4779","0.124"
-"151","18UB","East Devon","South West","58019","5410","9.2999999999999999E-2"
-"152","18UC","Exeter","South West","50488","5494","0.109"
-"153","18UD","Mid Devon","South West","31927","2832","8.8999999999999996E-2"
-"154","18UE","North Devon","South West","39190","3946","0.10100000000000001"
-"155","18UG","South Hams","South West","36169","3357","9.2999999999999999E-2"
-"156","18UH","Teignbridge","South West","54275","5218","9.6000000000000002E-2"
-"157","18UK","Torridge","South West","27971","2712","9.7000000000000003E-2"
-"158","18UL","West Devon","South West","22321","2201","9.9000000000000005E-2"
-"159","19UC","Christchurch","South West","21367","1683","7.9000000000000001E-2"
-"160","19UD","East Dorset","South West","37305","2667","7.0999999999999994E-2"
-"161","19UE","North Dorset","South West","28234","2305","8.2000000000000003E-2"
-"162","19UG","Purbeck","South West","19515","1660","8.5000000000000006E-2"
-"163","19UH","West Dorset","South West","43916","3864","8.7999999999999995E-2"
-"164","19UJ","Weymouth and Portland","South West","28934","2987","0.10299999999999999"
-"165","21UC","Eastbourne","South East","45222","4164","9.1999999999999998E-2"
-"166","21UD","Hastings","South East","39376","4518","0.115"
-"167","21UF","Lewes","South East","41710","3510","8.4000000000000005E-2"
-"168","21UG","Rother","South East","39927","3650","9.0999999999999998E-2"
-"169","21UH","Wealden","South East","60468","4890","8.1000000000000003E-2"
-"170","22UB","Basildon","East of England","72359","4997","6.9000000000000006E-2"
-"171","22UC","Braintree","East of England","60447","5520","9.0999999999999998E-2"
-"172","22UD","Brentwood","East of England","30708","3144","0.10199999999999999"
-"173","22UE","Castle Point","East of England","36789","3493","9.5000000000000001E-2"
-"174","22UF","Chelmsford","East of England","70896","6347","0.09"
-"175","22UG","Colchester","East of England","73275","7666","0.105"
-"176","22UH","Epping Forest","East of England","53235","5257","9.9000000000000005E-2"
-"177","22UJ","Harlow","East of England","35191","2196","6.2E-2"
-"178","22UK","Maldon","East of England","25740","2393","9.2999999999999999E-2"
-"179","22UL","Rochford","East of England","33675","3195","9.5000000000000001E-2"
-"180","22UN","Tendring","East of England","65180","7777","0.11899999999999999"
-"181","22UQ","Uttlesford","East of England","31139","3441","0.111"
-"182","23UB","Cheltenham","South West","51711","5226","0.10100000000000001"
-"183","23UC","Cotswold","South West","36204","3232","8.8999999999999996E-2"
-"184","23UD","Forest of Dean","South West","34011","2939","8.5999999999999993E-2"
-"185","23UE","Gloucester","South West","50814","4742","9.2999999999999999E-2"
-"186","23UF","Stroud","South West","47307","4347","9.1999999999999998E-2"
-"187","23UG","Tewkesbury","South West","34828","2690","7.6999999999999999E-2"
-"188","24UB","Basingstoke and Deane","South East","69787","3922","5.6000000000000001E-2"
-"189","24UC","East Hampshire","South East","46608","3221","6.9000000000000006E-2"
-"190","24UD","Eastleigh","South East","50993","3289","6.4000000000000001E-2"
-"191","24UE","Fareham","South East","46292","3023","6.5000000000000002E-2"
-"192","24UF","Gosport","South East","34587","2513","7.2999999999999995E-2"
-"193","24UG","Hart","South East","35740","2220","6.2E-2"
-"194","24UH","Havant","South East","50030","3365","6.7000000000000004E-2"
-"195","24UJ","New Forest","South East","75639","5526","7.2999999999999995E-2"
-"196","24UL","Rushmoor","South East","38610","2669","6.9000000000000006E-2"
-"197","24UN","Test Valley","South East","47225","3112","6.6000000000000003E-2"
-"198","24UP","Winchester","South East","47198","3636","7.6999999999999999E-2"
-"199","26UB","Broxbourne","East of England","38198","3108","8.1000000000000003E-2"
-"200","26UC","Dacorum","East of England","59558","5171","8.6999999999999994E-2"
-"201","26UD","East Hertfordshire","East of England","57129","5476","9.6000000000000002E-2"
-"202","26UE","Hertsmere","East of England","40367","4035","0.1"
-"203","26UF","North Hertfordshire","East of England","54881","4968","9.0999999999999998E-2"
-"204","26UG","St. Albans","East of England","56120","5719","0.10199999999999999"
-"205","26UH","Stevenage","East of England","34823","2277","6.5000000000000002E-2"
-"206","26UJ","Three Rivers","East of England","35642","3596","0.10100000000000001"
-"207","26UK","Watford","East of England","35076","3925","0.112"
-"208","26UL","Welwyn Hatfield","East of England","44588","4176","9.4E-2"
-"209","29UB","Ashford","South East","47186","3586","7.5999999999999998E-2"
-"210","29UC","Canterbury","South East","60878","6183","0.10199999999999999"
-"211","29UD","Dartford","South East","39290","2877","7.2999999999999995E-2"
-"212","29UE","Dover","South East","46415","4637","0.1"
-"213","29UG","Gravesham","South East","40559","3466","8.5000000000000006E-2"
-"214","29UH","Maidstone","South East","61845","5240","8.5000000000000006E-2"
-"215","29UK","Sevenoaks","South East","46282","3801","8.2000000000000003E-2"
-"216","29UL","Shepway","South East","43835","4006","9.0999999999999998E-2"
-"217","29UM","Swale","South East","54611","4702","8.5999999999999993E-2"
-"218","29UN","Thanet","South East","59091","6883","0.11600000000000001"
-"219","29UP","Tonbridge and Malling","South East","47346","3543","7.4999999999999997E-2"
-"220","29UQ","Tunbridge Wells","South East","45253","4234","9.4E-2"
-"221","30UD","Burnley","North West","37180","5721","0.154"
-"222","30UE","Chorley","North West","44756","4486","0.1"
-"223","30UF","Fylde","North West","34780","4080","0.11700000000000001"
-"224","30UG","Hyndburn","North West","34126","5120","0.15"
-"225","30UH","Lancaster","North West","59984","9795","0.16300000000000001"
-"226","30UJ","Pendle","North West","37892","6064","0.16"
-"227","30UK","Preston","North West","56395","7534","0.13400000000000001"
-"228","30UL","Ribble Valley","North West","23894","3011","0.126"
-"229","30UM","Rossendale","North West","28795","3783","0.13100000000000001"
-"230","30UN","South Ribble","North West","46900","4902","0.105"
-"231","30UP","West Lancashire","North West","46047","5100","0.111"
-"232","30UQ","Wyre","North West","48286","5929","0.123"
-"233","31UB","Blaby","East Midlands","38473","4274","0.111"
-"234","31UC","Charnwood","East Midlands","67388","9048","0.13400000000000001"
-"235","31UD","Harborough","East Midlands","35280","4046","0.115"
-"236","31UE","Hinckley and Bosworth","East Midlands","45653","5406","0.11799999999999999"
-"237","31UG","Melton","East Midlands","21405","2838","0.13300000000000001"
-"238","31UH","North West Leicestershire","East Midlands","39293","4908","0.125"
-"239","31UJ","Oadby and Wigston","East Midlands","22975","2981","0.13"
-"240","32UB","Boston","East Midlands","27141","3550","0.13100000000000001"
-"241","32UC","East Lindsey","East Midlands","62136","8433","0.13600000000000001"
-"242","32UD","Lincoln","East Midlands","41106","6687","0.16300000000000001"
-"243","32UE","North Kesteven","East Midlands","45610","5061","0.111"
-"244","32UF","South Holland","East Midlands","37594","4245","0.113"
-"245","32UG","South Kesteven","East Midlands","58176","6915","0.11899999999999999"
-"246","32UH","West Lindsey","East Midlands","38300","5170","0.13500000000000001"
-"247","33UB","Breckland","East of England","56501","5624","0.1"
-"248","33UC","Broadland","East of England","53161","4911","9.1999999999999998E-2"
-"249","33UD","Great Yarmouth","East of England","42342","5209","0.123"
-"250","33UE","King's Lynn and West Norfolk","East of England","64459","7117","0.11"
-"251","33UF","North Norfolk","East of England","46100","5636","0.122"
-"252","33UG","Norwich","East of England","60762","7490","0.123"
-"253","33UH","South Norfolk","East of England","52489","5206","9.9000000000000005E-2"
-"254","34UB","Corby","East Midlands","25739","2245","8.6999999999999994E-2"
-"255","34UC","Daventry","East Midlands","32101","3406","0.106"
-"256","34UD","East Northamptonshire","East Midlands","36120","4179","0.11600000000000001"
-"257","34UE","Kettering","East Midlands","39659","5275","0.13300000000000001"
-"258","34UF","Northampton","East Midlands","90641","10986","0.121"
-"259","34UG","South Northamptonshire","East Midlands","36064","4025","0.112"
-"260","34UH","Wellingborough","East Midlands","33277","3881","0.11700000000000001"
-"261","36UB","Craven","Yorkshire and the Humber","25268","3070","0.121"
-"262","36UC","Hambleton","Yorkshire and the Humber","38384","3596","9.4E-2"
-"263","36UD","Harrogate","Yorkshire and the Humber","68645","7570","0.11"
-"264","36UE","Richmondshire","Yorkshire and the Humber","20192","2191","0.109"
-"265","36UF","Ryedale","Yorkshire and the Humber","23299","2583","0.111"
-"266","36UG","Scarborough","Yorkshire and the Humber","51086","6913","0.13500000000000001"
-"267","36UH","Selby","Yorkshire and the Humber","35513","2809","7.9000000000000001E-2"
-"268","37UB","Ashfield","East Midlands","51088","7058","0.13800000000000001"
-"269","37UC","Bassetlaw","East Midlands","48275","6405","0.13300000000000001"
-"270","37UD","Broxtowe","East Midlands","48117","6750","0.14000000000000001"
-"271","37UE","Gedling","East Midlands","50651","6369","0.126"
-"272","37UF","Mansfield","East Midlands","44873","6308","0.14099999999999999"
-"273","37UG","Newark and Sherwood","East Midlands","49586","6797","0.13700000000000001"
-"274","37UJ","Rushcliffe","East Midlands","46925","6140","0.13100000000000001"
-"275","38UB","Cherwell","South East","57272","3913","6.8000000000000005E-2"
-"276","38UC","Oxford","South East","57168","7616","0.13300000000000001"
-"277","38UD","South Oxfordshire","South East","53872","4121","7.5999999999999998E-2"
-"278","38UE","Vale of White Horse","South East","49137","3702","7.4999999999999997E-2"
-"279","38UF","West Oxfordshire","South East","43437","3324","7.6999999999999999E-2"
-"280","40UB","Mendip","South West","46322","4258","9.1999999999999998E-2"
-"281","40UC","Sedgemoor","South West","48311","4213","8.6999999999999994E-2"
-"282","40UD","South Somerset","South West","68899","6053","8.7999999999999995E-2"
-"283","40UE","Taunton Deane","South West","47465","4161","8.7999999999999995E-2"
-"284","40UF","West Somerset","South West","16363","1728","0.106"
-"285","41UB","Cannock Chase","West Midlands","40378","4762","0.11799999999999999"
-"286","41UC","East Staffordshire","West Midlands","46447","6825","0.14699999999999999"
-"287","41UD","Lichfield","West Midlands","41682","4957","0.11899999999999999"
-"288","41UE","Newcastle-under-Lyme","West Midlands","52658","7527","0.14299999999999999"
-"289","41UF","South Staffordshire","West Midlands","44531","5083","0.114"
-"290","41UG","Stafford","West Midlands","54234","7149","0.13200000000000001"
-"291","41UH","Staffordshire Moorlands","West Midlands","40865","6013","0.14699999999999999"
-"292","41UK","Tamworth","West Midlands","31637","3159","0.1"
-"293","42UB","Babergh","East of England","37679","4021","0.107"
-"294","42UC","Forest Heath","East of England","25802","2872","0.111"
-"295","42UD","Ipswich","East of England","56496","7484","0.13200000000000001"
-"296","42UE","Mid Suffolk","East of England","39824","3879","9.7000000000000003E-2"
-"297","42UF","St. Edmundsbury","East of England","44921","4271","9.5000000000000001E-2"
-"298","42UG","Suffolk Coastal","East of England","54354","6171","0.114"
-"299","42UH","Waveney","East of England","51756","6728","0.13"
-"300","43UB","Elmbridge","South East","53663","4582","8.5000000000000006E-2"
-"301","43UC","Epsom and Ewell","South East","29176","2749","9.4E-2"
-"302","43UD","Guildford","South East","55166","4687","8.5000000000000006E-2"
-"303","43UE","Mole Valley","South East","35446","2901","8.2000000000000003E-2"
-"304","43UF","Reigate and Banstead","South East","56190","4387","7.8E-2"
-"305","43UG","Runnymede","South East","33376","2679","0.08"
-"306","43UH","Spelthorne","South East","40103","2898","7.1999999999999995E-2"
-"307","43UJ","Surrey Heath","South East","33430","2311","6.9000000000000006E-2"
-"308","43UK","Tandridge","South East","34052","2747","8.1000000000000003E-2"
-"309","43UL","Waverley","South East","49136","4030","8.2000000000000003E-2"
-"310","43UM","Woking","South East","39665","2716","6.8000000000000005E-2"
-"311","44UB","North Warwickshire","West Midlands","26267","3256","0.124"
-"312","44UC","Nuneaton and Bedworth","West Midlands","52872","6795","0.129"
-"313","44UD","Rugby","West Midlands","41425","5752","0.13900000000000001"
-"314","44UE","Stratford-on-Avon","West Midlands","51606","6682","0.129"
-"315","44UF","Warwick","West Midlands","59495","7635","0.128"
-"316","45UB","Adur","South East","26634","2136","0.08"
-"317","45UC","Arun","South East","66657","5446","8.2000000000000003E-2"
-"318","45UD","Chichester","South East","49287","4260","8.5999999999999993E-2"
-"319","45UE","Crawley","South East","42593","2271","5.2999999999999999E-2"
-"320","45UF","Horsham","South East","53727","3826","7.0999999999999994E-2"
-"321","45UG","Mid Sussex","South East","55546","4229","7.5999999999999998E-2"
-"322","45UH","Worthing","South East","45954","4272","9.2999999999999999E-2"
-"323","47UB","Bromsgrove","West Midlands","38513","4836","0.126"
-"324","47UC","Malvern Hills","West Midlands","31811","4721","0.14799999999999999"
-"325","47UD","Redditch","West Midlands","34123","3330","9.8000000000000004E-2"
-"326","47UE","Worcester","West Midlands","41800","5594","0.13400000000000001"
-"327","47UF","Wychavon","West Midlands","50216","6078","0.121"
-"328","47UG","Wyre Forest","West Midlands","43612","6054","0.13900000000000001"
+,Fuel Poverty in Local Authorities,...2,...3,...4,...5,...6,,
+1,NA,NA,NA,NA,NA,NA,,
+316,E07000223,Adur,South East,26634,2136,0.08,,Adur
+137,E07000026,Allerdale,North West,41574,4809,0.116,,Allerdale
+143,E07000032,Amber Valley,East Midlands,52709,7691,0.146,,Amber Valley
+317,E07000224,Arun,South East,66657,5446,8.20E-02,,Arun
+268,E07000170,Ashfield,East Midlands,51088,7058,0.138,,Ashfield
+209,E07000105,Ashford,South East,47186,3586,7.60E-02,,Ashford
+128,E07000004,Aylesbury Vale,South East,70888,5027,7.10E-02,,Aylesbury Vale
+293,42UB,Babergh,East of England,37679,4021,0.107,,
+4,00AB,Barking and Dagenham,London,67697,6678,9.90E-02,,
+5,00AC,Barnet,London,129022,16235,0.126,,
+51,00CC,Barnsley,Yorkshire and the Humber,102298,11175,0.109,,
+138,16UC,Barrow-in-Furness,North West,31484,4788,0.152,,
+170,22UB,Basildon,East of England,72359,4997,6.90E-02,,
+188,24UB,Basingstoke and Deane,South East,69787,3922,5.60E-02,,
+269,37UC,Bassetlaw,East Midlands,48275,6405,0.133,,
+98,00HA,Bath and North East Somerset,South West,73053,7459,0.102,,
+112,00KB,Bedford UA,East of England,64929,7349,0.113,,
+6,00AD,Bexley,London,87786,9869,0.112,,
+60,00CN,Birmingham,West Midlands,407865,63158,0.155,,
+233,31UB,Blaby,East Midlands,38473,4274,0.111,,
+83,00EX,Blackburn with Darwen,North West,55050,7367,0.134,,
+84,00EY,Blackpool,North West,67572,12143,0.18,,
+144,17UC,Bolsover,East Midlands,32339,4496,0.139,,
+36,00BL,Bolton,North West,114929,13103,0.114,,
+240,32UB,Boston,East Midlands,27141,3550,0.131,,
+106,00HN,Bournemouth,South West,79593,8886,0.112,,
+117,00MA,Bracknell Forest,South East,46179,2317,0.05,,
+67,00CX,Bradford,Yorkshire and the Humber,198766,25050,0.126,,
+171,22UC,Braintree,East of England,60447,5520,9.10E-02,,
+247,33UB,Breckland,East of England,56501,5624,0.1,,
+7,00AE,Brent,London,102836,12415,0.121,,
+172,22UD,Brentwood,East of England,30708,3144,0.102,,
+124,00ML,Brighton and Hove,South East,119169,13524,0.113,,
+99,00HB,"Bristol, City of",South West,174914,19733,0.113,,
+248,33UC,Broadland,East of England,53161,4911,9.20E-02,,
+8,00AF,Bromley,London,125396,13299,0.106,,
+323,47UB,Bromsgrove,West Midlands,38513,4836,0.126,,
+199,26UB,Broxbourne,East of England,38198,3108,8.10E-02,,
+270,37UD,Broxtowe,East Midlands,48117,6750,0.14,,
+221,30UD,Burnley,North West,37180,5721,0.154,,
+37,00BM,Bury,North West,78340,9699,0.124,,
+68,00CY,Calderdale,Yorkshire and the Humber,90018,10870,0.121,,
+132,12UB,Cambridge,East of England,47466,7493,0.158,,
+9,00AG,Camden,London,94565,8138,8.60E-02,,
+285,41UB,Cannock Chase,West Midlands,40378,4762,0.118,,
+210,29UC,Canterbury,South East,60878,6183,0.102,,
+139,16UD,Carlisle,North West,47185,5809,0.123,,
+173,22UE,Castle Point,East of England,36789,3493,9.50E-02,,
+234,31UC,Charnwood,East Midlands,67388,9048,0.134,,
+174,22UF,Chelmsford,East of England,70896,6347,0.09,,
+182,23UB,Cheltenham,South West,51711,5226,0.101,,
+275,38UB,Cherwell,South East,57272,3913,6.80E-02,,
+145,17UD,Chesterfield,East Midlands,46748,6053,0.129,,
+318,45UD,Chichester,South East,49287,4260,8.60E-02,,
+129,11UC,Chiltern,South East,36510,2947,8.10E-02,,
+222,30UE,Chorley,North West,44756,4486,0.1,,
+159,19UC,Christchurch,South West,21367,1683,7.90E-02,,
+3,00AA,City of London,London,4782,120,2.50E-02,,
+175,22UG,Colchester,East of England,73275,7666,0.105,,
+140,16UE,Copeland,North West,30928,3415,0.11,,
+254,34UB,Corby,East Midlands,25739,2245,8.70E-02,,
+102,00HE,Cornwall UA,South West,234519,23799,0.101,,
+183,23UC,Cotswold,South West,36204,3232,8.90E-02,,
+61,00CQ,Coventry,West Midlands,128258,20085,0.157,,
+261,36UB,Craven,Yorkshire and the Humber,25268,3070,0.121,,
+319,45UE,Crawley,South East,42593,2271,5.30E-02,,
+10,00AH,Croydon,London,140659,15196,0.108,,
+200,26UC,Dacorum,East of England,59558,5171,8.70E-02,,
+76,00EH,Darlington,North East,47470,6973,0.147,,
+211,29UD,Dartford,South East,39290,2877,7.30E-02,,
+255,34UC,Daventry,East Midlands,32101,3406,0.106,,
+90,00FK,Derby,East Midlands,99057,14486,0.146,,
+146,17UF,Derbyshire Dales,East Midlands,31130,4421,0.142,,
+52,00CE,Doncaster,Yorkshire and the Humber,127619,14516,0.114,,
+212,29UE,Dover,South East,46415,4637,0.1,,
+62,00CR,Dudley,West Midlands,129756,16668,0.128,,
+11,00AJ,Ealing,London,120090,14425,0.12,,
+133,12UC,East Cambridgeshire,East of England,35516,3344,9.40E-02,,
+151,18UB,East Devon,South West,58019,5410,9.30E-02,,
+160,19UD,East Dorset,South West,37305,2667,7.10E-02,,
+189,24UC,East Hampshire,South East,46608,3221,6.90E-02,,
+201,26UD,East Hertfordshire,East of England,57129,5476,9.60E-02,,
+241,32UC,East Lindsey,East Midlands,62136,8433,0.136,,
+256,34UD,East Northamptonshire,East Midlands,36120,4179,0.116,,
+86,00FB,East Riding of Yorkshire,Yorkshire and the Humber,146642,14827,0.101,,
+286,41UC,East Staffordshire,West Midlands,46447,6825,0.147,,
+165,21UC,Eastbourne,South East,45222,4164,9.20E-02,,
+190,24UD,Eastleigh,South East,50993,3289,6.40E-02,,
+141,16UF,Eden,North West,23043,2794,0.121,,
+300,43UB,Elmbridge,South East,53663,4582,8.50E-02,,
+12,00AK,Enfield,London,111728,12345,0.11,,
+176,22UH,Epping Forest,East of England,53235,5257,9.90E-02,,
+301,43UC,Epsom and Ewell,South East,29176,2749,9.40E-02,,
+147,17UG,Erewash,East Midlands,48917,6648,0.136,,
+152,18UC,Exeter,South West,50488,5494,0.109,,
+191,24UE,Fareham,South East,46292,3023,6.50E-02,,
+134,12UD,Fenland,East of England,40850,4338,0.106,,
+294,42UC,Forest Heath,East of England,25802,2872,0.111,,
+184,23UD,Forest of Dean,South West,34011,2939,8.60E-02,,
+223,30UF,Fylde,North West,34780,4080,0.117,,
+55,00CH,Gateshead,North East,90472,9890,0.109,,
+271,37UE,Gedling,East Midlands,50651,6369,0.126,,
+185,23UE,Gloucester,South West,50814,4742,9.30E-02,,
+192,24UF,Gosport,South East,34587,2513,7.30E-02,,
+213,29UG,Gravesham,South East,40559,3466,8.50E-02,,
+249,33UD,Great Yarmouth,East of England,42342,5209,0.123,,
+13,00AL,Greenwich,London,98384,7986,8.10E-02,,
+302,43UD,Guildford,South East,55166,4687,8.50E-02,,
+14,00AM,Hackney,London,93240,6326,6.80E-02,,
+80,00ET,Halton,North West,51423,4951,9.60E-02,,
+262,36UC,Hambleton,Yorkshire and the Humber,38384,3596,9.40E-02,,
+15,00AN,Hammersmith and Fulham,London,76561,7707,0.101,,
+235,31UD,Harborough,East Midlands,35280,4046,0.115,,
+16,00AP,Haringey,London,95302,10632,0.112,,
+177,22UJ,Harlow,East of England,35191,2196,6.20E-02,,
+263,36UD,Harrogate,Yorkshire and the Humber,68645,7570,0.11,,
+17,00AQ,Harrow,London,79983,10174,0.127,,
+193,24UG,Hart,South East,35740,2220,6.20E-02,,
+72,00EB,Hartlepool,North East,40743,5234,0.128,,
+166,21UD,Hastings,South East,39376,4518,0.115,,
+194,24UH,Havant,South East,50030,3365,6.70E-02,,
+18,00AR,Havering,London,92429,9924,0.107,,
+94,00GA,"Herefordshire, County of",West Midlands,80661,11660,0.145,,
+202,26UE,Hertsmere,East of England,40367,4035,0.1,,
+148,17UH,High Peak,East Midlands,40125,5838,0.145,,
+19,00AS,Hillingdon,London,96885,10536,0.109,,
+236,31UE,Hinckley and Bosworth,East Midlands,45653,5406,0.118,,
+320,45UF,Horsham,South East,53727,3826,7.10E-02,,
+20,00AT,Hounslow,London,87673,9441,0.108,,
+135,12UE,Huntingdonshire,East of England,69308,5482,7.90E-02,,
+224,30UG,Hyndburn,North West,34126,5120,0.15,,
+295,42UD,Ipswich,East of England,56496,7484,0.132,,
+127,00MW,Isle of Wight,South East,63059,6271,9.90E-02,,
+103,00HF,Isles of Scilly UA,South West,934,76,8.10E-02,,
+21,00AU,Islington,London,91620,6084,6.60E-02,,
+22,00AW,Kensington and Chelsea,London,78723,7932,0.101,,
+257,34UE,Kettering,East Midlands,39659,5275,0.133,,
+250,33UE,King's Lynn and West Norfolk,East of England,64459,7117,0.11,,
+85,00FA,"Kingston upon Hull, City of",Yorkshire and the Humber,109620,11567,0.106,,
+23,00AX,Kingston upon Thames,London,61659,7392,0.12,,
+69,00CZ,Kirklees,Yorkshire and the Humber,175184,20074,0.115,,
+46,00BX,Knowsley,North West,62840,6211,9.90E-02,,
+2,LA Code,LA Name,English region,All Households,Fuel Poor Households,Percent Fuel Poor,,
+24,00AY,Lambeth,London,123021,9200,7.50E-02,,
+225,30UH,Lancaster,North West,59984,9795,0.163,,
+70,00DA,Leeds,Yorkshire and the Humber,336974,37137,0.11,,
+91,00FN,Leicester,East Midlands,121269,19733,0.163,,
+167,21UF,Lewes,South East,41710,3510,8.40E-02,,
+25,00AZ,Lewisham,London,107982,8853,8.20E-02,,
+287,41UD,Lichfield,West Midlands,41682,4957,0.119,,
+242,32UD,Lincoln,East Midlands,41106,6687,0.163,,
+47,00BY,Liverpool,North West,196563,27689,0.141,,
+111,00KA,Luton,East of England,75137,9639,0.128,,
+214,29UH,Maidstone,South East,61845,5240,8.50E-02,,
+178,22UK,Maldon,East of England,25740,2393,9.30E-02,,
+324,47UC,Malvern Hills,West Midlands,31811,4721,0.148,,
+38,00BN,Manchester,North West,188232,24970,0.133,,
+272,37UF,Mansfield,East Midlands,44873,6308,0.141,,
+116,00LC,Medway,South East,105749,9476,0.09,,
+237,31UG,Melton,East Midlands,21405,2838,0.133,,
+280,40UB,Mendip,South West,46322,4258,9.20E-02,,
+26,00BA,Merton,London,79478,8788,0.111,,
+153,18UD,Mid Devon,South West,31927,2832,8.90E-02,,
+296,42UE,Mid Suffolk,East of England,39824,3879,9.70E-02,,
+321,45UG,Mid Sussex,South East,55546,4229,7.60E-02,,
+73,00EC,Middlesbrough,North East,57741,8972,0.155,,
+123,00MG,Milton Keynes,South East,97018,4887,0.05,,
+303,43UE,Mole Valley,South East,35446,2901,8.20E-02,,
+195,24UJ,New Forest,South East,75639,5526,7.30E-02,,
+273,37UG,Newark and Sherwood,East Midlands,49586,6797,0.137,,
+56,00CJ,Newcastle upon Tyne,North East,116730,14149,0.121,,
+288,41UE,Newcastle-under-Lyme,West Midlands,52658,7527,0.143,,
+27,00BB,Newham,London,97251,11027,0.113,,
+154,18UE,North Devon,South West,39190,3946,0.101,,
+161,19UE,North Dorset,South West,28234,2305,8.20E-02,,
+149,17UJ,North East Derbyshire,East Midlands,42992,4883,0.114,,
+87,00FC,North East Lincolnshire,Yorkshire and the Humber,70457,8518,0.121,,
+203,26UF,North Hertfordshire,East of England,54881,4968,9.10E-02,,
+243,32UE,North Kesteven,East Midlands,45610,5061,0.111,,
+88,00FD,North Lincolnshire,Yorkshire and the Humber,71568,7095,9.90E-02,,
+251,33UF,North Norfolk,East of England,46100,5636,0.122,,
+100,00HC,North Somerset,South West,89324,7720,8.60E-02,,
+57,00CK,North Tyneside,North East,91679,9793,0.107,,
+311,44UB,North Warwickshire,West Midlands,26267,3256,0.124,,
+238,31UH,North West Leicestershire,East Midlands,39293,4908,0.125,,
+258,34UF,Northampton,East Midlands,90641,10986,0.121,,
+252,33UG,Norwich,East of England,60762,7490,0.123,,
+93,00FY,Nottingham,East Midlands,127987,19505,0.152,,
+312,44UC,Nuneaton and Bedworth,West Midlands,52872,6795,0.129,,
+239,31UJ,Oadby and Wigston,East Midlands,22975,2981,0.13,,
+39,00BP,Oldham,North West,89738,10136,0.113,,
+276,38UC,Oxford,South East,57168,7616,0.133,,
+226,30UJ,Pendle,North West,37892,6064,0.16,,
+110,00JA,Peterborough,East of England,73673,7588,0.103,,
+104,00HG,Plymouth,South West,107087,10897,0.102,,
+107,00HP,Poole,South West,62585,5332,8.50E-02,,
+125,00MR,Portsmouth,South East,84415,9006,0.107,,
+227,30UK,Preston,North West,56395,7534,0.134,,
+162,19UG,Purbeck,South West,19515,1660,8.50E-02,,
+119,00MC,Reading,South East,63853,6842,0.107,,
+28,00BC,Redbridge,London,94678,11350,0.12,,
+74,00EE,Redcar and Cleveland,North East,60876,7889,0.13,,
+325,47UD,Redditch,West Midlands,34123,3330,9.80E-02,,
+304,43UF,Reigate and Banstead,South East,56190,4387,7.80E-02,,
+228,30UL,Ribble Valley,North West,23894,3011,0.126,,
+29,00BD,Richmond upon Thames,London,76050,8433,0.111,,
+264,36UE,Richmondshire,Yorkshire and the Humber,20192,2191,0.109,,
+40,00BQ,Rochdale,North West,85779,9888,0.115,,
+179,22UL,Rochford,East of England,33675,3195,9.50E-02,,
+229,30UM,Rossendale,North West,28795,3783,0.131,,
+168,21UG,Rother,South East,39927,3650,9.10E-02,,
+53,00CF,Rotherham,Yorkshire and the Humber,110636,11160,0.101,,
+313,44UD,Rugby,West Midlands,41425,5752,0.139,,
+305,43UG,Runnymede,South East,33376,2679,0.08,,
+274,37UJ,Rushcliffe,East Midlands,46925,6140,0.131,,
+196,24UL,Rushmoor,South East,38610,2669,6.90E-02,,
+92,00FP,Rutland,East Midlands,15258,2078,0.136,,
+265,36UF,Ryedale,Yorkshire and the Humber,23299,2583,0.111,,
+41,00BR,Salford,North West,101252,11277,0.111,,
+63,00CS,Sandwell,West Midlands,120649,16921,0.14,,
+266,36UG,Scarborough,Yorkshire and the Humber,51086,6913,0.135,,
+281,40UC,Sedgemoor,South West,48311,4213,8.70E-02,,
+49,00CA,Sefton,North West,121187,17425,0.144,,
+267,36UH,Selby,Yorkshire and the Humber,35513,2809,7.90E-02,,
+215,29UK,Sevenoaks,South East,46282,3801,8.20E-02,,
+54,00CG,Sheffield,Yorkshire and the Humber,234605,25899,0.11,,
+216,29UL,Shepway,South East,43835,4006,9.10E-02,,
+96,00GG,Shropshire UA,West Midlands,127526,18904,0.148,,
+120,00MD,Slough,South East,49361,3681,7.50E-02,,
+64,00CT,Solihull,West Midlands,85555,9909,0.116,,
+130,11UE,South Buckinghamshire,South East,25879,2014,7.80E-02,,
+136,12UG,South Cambridgeshire,East of England,60150,5602,9.30E-02,,
+150,17UK,South Derbyshire,East Midlands,38439,4779,0.124,,
+101,00HD,South Gloucestershire,South West,104974,7957,7.60E-02,,
+155,18UG,South Hams,South West,36169,3357,9.30E-02,,
+244,32UF,South Holland,East Midlands,37594,4245,0.113,,
+245,32UG,South Kesteven,East Midlands,58176,6915,0.119,,
+142,16UG,South Lakeland,North West,46721,6030,0.129,,
+253,33UH,South Norfolk,East of England,52489,5206,9.90E-02,,
+259,34UG,South Northamptonshire,East Midlands,36064,4025,0.112,,
+277,38UD,South Oxfordshire,South East,53872,4121,7.60E-02,,
+230,30UN,South Ribble,North West,46900,4902,0.105,,
+282,40UD,South Somerset,South West,68899,6053,8.80E-02,,
+289,41UF,South Staffordshire,West Midlands,44531,5083,0.114,,
+58,00CL,South Tyneside,North East,69760,7140,0.102,,
+126,00MS,Southampton,South East,99405,9743,9.80E-02,,
+114,00KF,Southend-on-Sea,East of England,74529,9530,0.128,,
+30,00BE,Southwark,London,111599,5545,0.05,,
+306,43UH,Spelthorne,South East,40103,2898,7.20E-02,,
+204,26UG,St. Albans,East of England,56120,5719,0.102,,
+297,42UF,St. Edmundsbury,East of England,44921,4271,9.50E-02,,
+48,00BZ,St. Helens,North West,76911,8720,0.113,,
+290,41UG,Stafford,West Midlands,54234,7149,0.132,,
+291,41UH,Staffordshire Moorlands,West Midlands,40865,6013,0.147,,
+205,26UH,Stevenage,East of England,34823,2277,6.50E-02,,
+42,00BS,Stockport,North West,124457,15274,0.123,,
+75,00EF,Stockton-on-Tees,North East,80765,9517,0.118,,
+97,00GL,Stoke-on-Trent,West Midlands,107771,16625,0.154,,
+314,44UE,Stratford-on-Avon,West Midlands,51606,6682,0.129,,
+186,23UF,Stroud,South West,47307,4347,9.20E-02,,
+298,42UG,Suffolk Coastal,East of England,54354,6171,0.114,,
+59,00CM,Sunderland,North East,121556,14482,0.119,,
+307,43UJ,Surrey Heath,South East,33430,2311,6.90E-02,,
+31,00BF,Sutton,London,76598,7654,0.1,,
+217,29UM,Swale,South East,54611,4702,8.60E-02,,
+108,00HX,Swindon,South West,86002,6361,7.40E-02,,
+43,00BT,Tameside,North West,94520,11211,0.119,,
+292,41UK,Tamworth,West Midlands,31637,3159,0.1,,
+308,43UK,Tandridge,South East,34052,2747,8.10E-02,,
+283,40UE,Taunton Deane,South West,47465,4161,8.80E-02,,
+156,18UH,Teignbridge,South West,54275,5218,9.60E-02,,
+95,00GF,Telford and Wrekin,West Midlands,68678,7221,0.105,,
+180,22UN,Tendring,East of England,65180,7777,0.119,,
+197,24UN,Test Valley,South East,47225,3112,6.60E-02,,
+187,23UG,Tewkesbury,South West,34828,2690,7.70E-02,,
+218,29UN,Thanet,South East,59091,6883,0.116,,
+206,26UJ,Three Rivers,East of England,35642,3596,0.101,,
+115,00KG,Thurrock,East of England,64362,5303,8.20E-02,,
+219,29UP,Tonbridge and Malling,South East,47346,3543,7.50E-02,,
+105,00HH,Torbay,South West,61256,7006,0.114,,
+157,18UK,Torridge,South West,27971,2712,9.70E-02,,
+32,00BG,Tower Hamlets,London,95191,3575,3.80E-02,,
+44,00BU,Trafford,North West,94513,12355,0.131,,
+220,29UQ,Tunbridge Wells,South East,45253,4234,9.40E-02,,
+181,22UQ,Uttlesford,East of England,31139,3441,0.111,,
+278,38UE,Vale of White Horse,South East,49137,3702,7.50E-02,,
+71,00DB,Wakefield,Yorkshire and the Humber,144946,13575,9.40E-02,,
+65,00CU,Walsall,West Midlands,104830,13686,0.131,,
+33,00BH,Waltham Forest,London,89810,10568,0.118,,
+34,00BJ,Wandsworth,London,120437,10394,8.60E-02,,
+81,00EU,Warrington,North West,86246,8720,0.101,,
+315,44UF,Warwick,West Midlands,59495,7635,0.128,,
+207,26UK,Watford,East of England,35076,3925,0.112,,
+299,42UH,Waveney,East of England,51756,6728,0.13,,
+309,43UL,Waverley,South East,49136,4030,8.20E-02,,
+169,21UH,Wealden,South East,60468,4890,8.10E-02,,
+260,34UH,Wellingborough,East Midlands,33277,3881,0.117,,
+208,26UL,Welwyn Hatfield,East of England,44588,4176,9.40E-02,,
+118,00MB,West Berkshire,South East,63350,4289,6.80E-02,,
+158,18UL,West Devon,South West,22321,2201,9.90E-02,,
+163,19UH,West Dorset,South West,43916,3864,8.80E-02,,
+231,30UP,West Lancashire,North West,46047,5100,0.111,,
+246,32UH,West Lindsey,East Midlands,38300,5170,0.135,,
+279,38UF,West Oxfordshire,South East,43437,3324,7.70E-02,,
+284,40UF,West Somerset,South West,16363,1728,0.106,,
+35,00BK,Westminster,London,93571,7804,8.30E-02,,
+164,19UJ,Weymouth and Portland,South West,28934,2987,0.103,,
+45,00BW,Wigan,North West,133814,15056,0.113,,
+109,00HY,Wiltshire UA,South West,191818,15873,8.30E-02,,
+198,24UP,Winchester,South East,47198,3636,7.70E-02,,
+121,00ME,Windsor and Maidenhead,South East,57319,4448,7.80E-02,,
+50,00CB,Wirral,North West,138678,18708,0.135,,
+310,43UM,Woking,South East,39665,2716,6.80E-02,,
+122,00MF,Wokingham,South East,61349,3856,6.30E-02,,
+66,00CW,Wolverhampton,West Midlands,99664,14770,0.148,,
+326,47UE,Worcester,West Midlands,41800,5594,0.134,,
+322,45UH,Worthing,South East,45954,4272,9.30E-02,,
+327,47UF,Wychavon,West Midlands,50216,6078,0.121,,
+131,11UF,Wycombe,South East,66970,5341,0.08,,
+232,30UQ,Wyre,North West,48286,5929,0.123,,
+328,47UG,Wyre Forest,West Midlands,43612,6054,0.139,,
+89,00FF,York,Yorkshire and the Humber,84708,9323,0.11,,
