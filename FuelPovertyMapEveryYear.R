@@ -26,7 +26,7 @@ create_fuel_poverty_map <- function(year) {
             size = 0.25) +
     scale_fill_gradient2(
       low = "blue", 
-      mid = "white",
+      mid = "green",
       high = "red",
       midpoint = median(fuel_data$proportion, na.rm = TRUE),  # Changed to median for better color distribution
       na.value = "grey80",
