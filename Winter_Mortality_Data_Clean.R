@@ -18,9 +18,15 @@ library(janitor) # cleans data sets (converts from single object to flattened ta
 library(treemap)
 library(shiny)
 
+
+# Program File ------------------------------------------------------------
+
+# Extracting winter mortality index by region and year
+# Winter mortality index is a percentage of winter deaths / avg. deaths
+
 mortality_data <- read_xlsx("wintermortalityreferencetable.xlsx", 
                             sheet = "Table_10",
-                            skip = 5) %>%
+                            skip = 5) %>% # skip first 5 rows
   # Filter for area codes E06-E09
   filter(str_detect(`Area code`, "^E0[6-9]")) %>%
   # Select relevant columns - area identifiers and just 2011-2022 WMI columns
