@@ -1,9 +1,9 @@
-install.packages("sf")
+# install.packages("sf")
 library(sf)
 library(ggplot2)
 library(dplyr)
 
-la_boundaries <- st_read("Local_Authority_Districts_December_2022_UK_BGC_V2_8602835163392188905")
+la_boundaries <- st_read("Local_Authority_Districts_December_2022_UK_BGC_V2_-7833039764417853105.csv")
 mortality_data <- read.csv("mortality_data.csv")
 
 # Select just 2011/2012 data
