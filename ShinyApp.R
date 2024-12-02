@@ -77,12 +77,14 @@ server <- function(input, output, session) {
         fuel_data <- read.csv(filepath)
         all_data[[as.character(year)]] <- fuel_data
       }
-      data_cache(all_data)
+      mortality_data <- read.csv("mortality_data.csv")
+      all_data[["mortality_data"]] <- mortality_data  # Add mortality data to the list
+      data_cache(all_data) #Store cleaned excel data
     }
   })
   
   # Function to get data for a specific year
-  getData <- function(year) {
+  get_Reg_Data <- function(year) {
     # Read boundaries
     la_boundaries <- st_read("Local_Authority_Districts_December_2022_UK_BGC_V2_-7833039764417853105.csv", quiet = TRUE)
     
@@ -99,9 +101,19 @@ server <- function(input, output, session) {
     return(uk_boundaries_with_data)
   }
   
+  get_WMI_data <- function(year){
+    # Read boundaries
+    la_boundaries <- st_read("Local_Authority_Districts_December_2022_UK_BGC_V2_-7833039764417853105.csv", quiet = TRUE)
+    
+    # Get WMI value from cache Extract correct column from WMI.csv - can't use
+    # column headings (multiple years in each column heading atm)
+    WMI_value <- mortality_data[]
+    
+  }
+  
   # Create main map
   output$map <- renderPlotly({
-    data <- getData(input$year)
+    data <- get_Reg_Data(input$year)
     
     # Base plot
     p <- ggplot() +
@@ -116,7 +128,8 @@ server <- function(input, output, session) {
                   text = paste(LAD22NM, "\nFuel Poverty:", 
                                round(proportion, 1), "%")),
               color = "white",
-              size = 0.25) +
+              size = 0.25,
+              alpha = 0.5) + # 0.5 gives 50% opacity to allow winter fuel deaths to be overlaid
       scale_fill_gradient2(
         low = "blue",
         mid = "white",

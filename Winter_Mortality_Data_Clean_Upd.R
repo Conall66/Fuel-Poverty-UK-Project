@@ -101,9 +101,9 @@ for(year in mortality_data_years){
 
 # R Shiny Presentation ----------------------------------------------------
 
-ui <- fluidPage(
-  "Hello world!"
-)
-server <- function(input, output, session) {
-}
-shinyApp(ui, server)
+# ui <- fluidPage(
+#   "Hello world!"
+# )
+# server <- function(input, output, session) {
+# }
+# shinyApp(ui, server)
