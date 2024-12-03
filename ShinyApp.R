@@ -5,6 +5,7 @@ library(dplyr)
 library(sf)
 library(plotly)
 library(RColorBrewer)
+library(leaflet.extras)
 
 # UI Definition
 ui <- fluidPage(
@@ -78,6 +79,11 @@ server <- function(input, output, session) {
       st_transform(4326)  # Transform to WGS84
   })
   
+  # Load pre-calculated changes
+  changes_data <- reactive({
+    read.csv("fuel_poverty_changes.csv")
+  })
+  
   # Create the base map
   output$map <- renderLeaflet({
     leaflet() %>%
@@ -94,15 +100,12 @@ server <- function(input, output, session) {
     req(fuel_poverty_data(), shape_data())
     
     # Get the data
-    fp_data <- fuel_poverty_data()
+    data <- fuel_poverty_data()
     shapes <- shape_data()
-    
-    # Fix the column name in fuel poverty data
-    names(fp_data)[names(fp_data) == "Area.Codes"] <- "Area_Codes"
     
     # Join the data
     mapped_data <- shapes %>%
-      left_join(fp_data, by = c("LAD22CD" = "Area_Codes"))
+      left_join(data, by = c("LAD22CD" = "Area.Codes"))
     
     # Create color palette
     pal <- colorBin(
@@ -110,11 +113,11 @@ server <- function(input, output, session) {
       domain = if(input$view_type == "total") mapped_data$fuel_poor 
       else mapped_data$proportion,
       bins = 7,
-      na.color = "#808080"  # Grey for missing data
+      na.color = "#808080"
     )
     
-    # Update map
-    leafletProxy("map") %>%
+    # Base map update
+    map_proxy <- leafletProxy("map") %>%
       clearShapes() %>%
       addPolygons(
         data = mapped_data,
@@ -144,7 +147,47 @@ server <- function(input, output, session) {
           textsize = "13px",
           direction = "auto"
         )
+      ) %>%
+      addLegend(
+        position = "bottomright",
+        pal = pal,
+        values = if(input$view_type == "total") mapped_data$fuel_poor 
+        else mapped_data$proportion,
+        title = if(input$view_type == "total") "Fuel Poor Households"
+        else "Proportion (%)",
+        opacity = 0.7
       )
+    
+    # Add arrows for the selected year
+    current_changes <- changes_data() %>%
+      filter(Year == input$year, Significant == TRUE)
+    
+    if(nrow(current_changes) > 0) {
+      # Get centroids for arrow placement
+      centroids <- st_centroid(shapes)
+      centroids_df <- data.frame(
+        Area_Codes = shapes$LAD22CD,
+        Longitude = st_coordinates(centroids)[,1],
+        Latitude = st_coordinates(centroids)[,2]
+      )
+      
+      # Join changes with centroids
+      arrow_data <- current_changes %>%
+        left_join(centroids_df, by = "Area_Codes")
+      
+      # Add arrows using ifelse instead of if
+      map_proxy %>%
+        addAwesomeMarkers(
+          data = arrow_data,
+          lng = ~Longitude,
+          lat = ~Latitude,
+          icon = ~makeAwesomeIcon(
+            icon = ifelse(Direction == "increase", "arrow-up", "arrow-down"),
+            markerColor = ifelse(Direction == "increase", "red", "blue"),
+            iconColor = "white"
+          )
+        )
+    }
   })
   
   # Generate summary statistics
