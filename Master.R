@@ -6,7 +6,6 @@
 # Read data
 library(rio)
 library(readxl)
-library(dplyr)
 library(stringr)
 
 # To clean data
@@ -17,11 +16,15 @@ library(janitor) # cleans data sets (converts from single object to flattened ta
 # Plotting
 library(treemap)
 library(shiny)
+library(shinydashboard)
+library(shinyWidgets)
 library(vroom)
 library(sf)
+library(highcharter)
 library(ggplot2)
 library(dplyr)
 library(leaflet)
+library(plotly)
 
 # Collecting Data ---------------------------------------------------------
 
@@ -85,18 +88,23 @@ map_plt <- function(year){
   # and proportion of fuel poor houses
   
   target_file <- find_sub_reg_file('Final Data Cleaned', year)
-  Sub_reg_data < read.csv(target_file)
+  Sub_reg_data <- read.csv(target_file) %>%
     select(Area.Codes, proportion)
   
   # UK map plot info
   uk_boundaries_with_data <- La_bounds %>%
-    left_join(WMI_data, by = c("LAD22CD" = "Area.code"))
-  
-  uk_boundaries_with_data <- uk_boundaries_with_data %>%
+    left_join(WMI_data, by = c("LAD22CD" = "Area.code")) %>%
     left_join(Sub_reg_data, by = c("LAD22CD" = "Area.Codes"))
   
-  #Rename columns for easier callback later
-  colnames(uk_boundaries_with_data) <- c("Area Code", "WMI", "Sub Regional Data")
+  # Create the dynamic column name
+  col_name_WMI <- paste0("Winter.mortality.index..", year, ".", (year + 1))
+  
+  # Replace column name for WMI
+  colnames(uk_boundaries_with_data)[colnames(uk_boundaries_with_data) == col_name_WMI] <- "WMI"
+  
+  # Replace column name for proportion
+  colnames(uk_boundaries_with_data)[colnames(uk_boundaries_with_data) == "proportion"] <- "Sub Regional Data"
+  
   
   return(uk_boundaries_with_data)
   
@@ -118,7 +126,7 @@ ui <- dashboardPage(
       style = "font-family: 'Open Sans', sans-serif; font-style: italic; font-weight: bold; display: flex; justify-content: center; align-items: center; height: 100%; padding-top: 50px; gap: 10px;",
       
       noUiSliderInput(
-        inputId = "cocoaSlider",
+        inputId = "Year_slider",
         min = 50, max = 100,
         value = c(50, 60),
         orientation = "vertical",
@@ -145,12 +153,54 @@ server <- function(input, output, session){
   WMI_palette <- colorNumeric(palette = c("white", "red"), 
                               domain = map_data$`WMI`)
   
-  
+  output$map <- renderPlotly({
+    
+    # Base plot
+    p <- ggplot() +
+      # Non-England regions in light grey
+      geom_sf(data = filter(data, country != "E"),
+              fill = "grey90",
+              color = "white",
+              size = 0.25) +
+      
+      # England with fuel poverty data
+      geom_sf(data = filter(data, country == "E"),
+              aes(fill = `Sub Regional Data`,
+                  text = paste(LAD22NM, "\nFuel Poverty:", 
+                               round(WMI, 1), "%")),
+              color = "white",
+              size = 0.25,
+              alpha = 0.5) + # 0.5 gives 50% opacity to allow winter fuel deaths to be overlaid
+      scale_fill_gradientn(
+        colors = fuel_poverty_palette(seq(0, 1, length.out = 100)),  # Apply fuel poverty color palette
+        name = "% in Fuel Poverty"
+      ) +
+      
+      # England with fuel poverty data
+      geom_sf(data = filter(data, country == "E"),
+              aes(fill = `WMI`,
+                  text = paste(LAD22NM, "\nWinter Mortality Index:", 
+                               round(WMI, 1), "%")),
+              color = "white",
+              size = 0.25,
+              alpha = 0.5) + # 0.5 gives 50% opacity to allow winter fuel deaths to be overlaid
+      scale_fill_gradientn(
+        colors = WMI_palette(seq(0, 1, length.out = 100)),  # Apply WMI poverty color palette
+        name = "% WMI"
+      ) +
+      
+      theme_void() +
+      labs(title = paste("Fuel Poverty and Winter Mortality in", input$year))
+    
+    # Convert to plotly for zoom
+    ggplotly(p, tooltip = "text") %>%
+      layout(dragmode = "zoom")
+  })
   
 }
 
 # Toggle on and off to test script without running app
-# shinyApp(ui, server)
+shinyApp(ui, server)
 
 
 
