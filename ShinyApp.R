@@ -84,6 +84,40 @@ server <- function(input, output, session) {
     read.csv("fuel_poverty_changes.csv")
   })
   
+  # Create icons for different sizes
+  icons <- list(
+    small_up = makeIcon(
+      iconUrl = "icons/small-up-arrow.png",
+      iconWidth = 20, iconHeight = 20,
+      iconAnchorX = 10, iconAnchorY = 10
+    ),
+    medium_up = makeIcon(
+      iconUrl = "icons/medium-up-arrow.png",
+      iconWidth = 30, iconHeight = 30,
+      iconAnchorX = 15, iconAnchorY = 15
+    ),
+    large_up = makeIcon(
+      iconUrl = "icons/large-up-arrow.png",
+      iconWidth = 40, iconHeight = 40,
+      iconAnchorX = 20, iconAnchorY = 20
+    ),
+    small_down = makeIcon(
+      iconUrl = "icons/small-down-arrow.png",
+      iconWidth = 20, iconHeight = 20,
+      iconAnchorX = 10, iconAnchorY = 10
+    ),
+    medium_down = makeIcon(
+      iconUrl = "icons/medium-down-arrow.png",
+      iconWidth = 30, iconHeight = 30,
+      iconAnchorX = 15, iconAnchorY = 15
+    ),
+    large_down = makeIcon(
+      iconUrl = "icons/large-down-arrow.png",
+      iconWidth = 40, iconHeight = 40,
+      iconAnchorX = 20, iconAnchorY = 20
+    )
+  )
+  
   # Create the base map
   output$map <- renderLeaflet({
     leaflet() %>%
@@ -171,22 +205,37 @@ server <- function(input, output, session) {
         Latitude = st_coordinates(centroids)[,2]
       )
       
-      # Join changes with centroids
+      # Join changes with centroids and determine icon size
       arrow_data <- current_changes %>%
-        left_join(centroids_df, by = "Area_Codes")
-      
-      # Add arrows using ifelse instead of if
-      map_proxy %>%
-        addAwesomeMarkers(
-          data = arrow_data,
-          lng = ~Longitude,
-          lat = ~Latitude,
-          icon = ~makeAwesomeIcon(
-            icon = ifelse(Direction == "increase", "arrow-up", "arrow-down"),
-            markerColor = ifelse(Direction == "increase", "red", "blue"),
-            iconColor = "white"
+        left_join(centroids_df, by = "Area_Codes") %>%
+        mutate(
+          icon_type = case_when(
+            Direction == "increase" & abs(Percent_Change) > 35 ~ "large_up",
+            Direction == "increase" & abs(Percent_Change) > 25 ~ "medium_up",
+            Direction == "increase" ~ "small_up",
+            Direction == "decrease" & abs(Percent_Change) > 35 ~ "large_down",
+            Direction == "decrease" & abs(Percent_Change) > 25 ~ "medium_down",
+            TRUE ~ "small_down"
           )
         )
+      
+      # Add markers for each size category
+      for(icon_type in unique(arrow_data$icon_type)) {
+        subset_data <- arrow_data[arrow_data$icon_type == icon_type, ]
+        if(nrow(subset_data) > 0) {
+          map_proxy <- map_proxy %>%
+            addMarkers(
+              data = subset_data,
+              lng = ~Longitude,
+              lat = ~Latitude,
+              icon = icons[[icon_type]],
+              label = ~paste0(
+                ifelse(Direction == "increase", "Increase: ", "Decrease: "), 
+                round(abs(Percent_Change), 1), "%"
+              )
+            )
+        }
+      }
     }
   })
   
