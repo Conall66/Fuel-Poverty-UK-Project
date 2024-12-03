@@ -128,20 +128,22 @@ server <- function(input, output, session) {
           fillOpacity = 0.9,
           bringToFront = TRUE
         ),
-        label = ~paste0(
-          LAD22NM, "<br>",
-          "Fuel Poor: ", fuel_poor, "<br>",
-          "Proportion: ", round(proportion, 1), "%"
+        label = ~lapply(paste0(
+          "<b>", LAD22NM, "</b><br/>",
+          "Fuel Poor: ", formatC(fuel_poor, format="f", big.mark=",", digits=0), "<br/>",
+          "Proportion: ", formatC(proportion, format="f", digits=1), "%"
+        ), HTML),
+        labelOptions = labelOptions(
+          style = list(
+            "font-family" = "sans-serif",
+            padding = "6px",
+            "background-color" = "white",
+            "border-color" = "rgba(0,0,0,0.5)",
+            "border-radius" = "4px"
+          ),
+          textsize = "13px",
+          direction = "auto"
         )
-      ) %>%
-      addLegend(
-        position = "bottomright",
-        pal = pal,
-        values = if(input$view_type == "total") mapped_data$fuel_poor 
-        else mapped_data$proportion,
-        title = if(input$view_type == "total") "Fuel Poor Households"
-        else "Proportion (%)",
-        opacity = 0.7
       )
   })
   
