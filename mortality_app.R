@@ -4,6 +4,7 @@ library(leaflet)
 library(dplyr)
 library(sf)
 library(RColorBrewer)
+library(ggplot2)
 
 # UI Definition
 ui <- fluidPage(
@@ -21,13 +22,17 @@ ui <- fluidPage(
       
       # Add explanation text
       helpText("Winter Mortality Index for English Local Authorities.",
-               "Gray areas indicate regions where data is not available."),
+               "Gray areas indicate regions where data is not available.",
+               "Click on any region to see historical trends."),
       
       # Warning message for missing data
       htmlOutput("warning_message"),
       
-      # Debug output
-      verbatimTextOutput("debug_info"),
+      # Area specific time series plot
+      plotOutput("time_series", height = "300px"),
+      
+      # Selected area name
+      textOutput("selected_area"),
       
       # Summary statistics output
       h4("Summary Statistics"),
@@ -43,11 +48,19 @@ ui <- fluidPage(
 # Server logic
 server <- function(input, output, session) {
   
-  # Load mortality data
+  # Store the full mortality dataset
+  full_mortality_data <- reactive({
+    mortality_df <- read.csv("WMI_RelevantYears.csv", check.names = FALSE)
+    return(mortality_df)
+  })
+  
+  # Store the selected region
+  selected_region <- reactiveVal(NULL)
+  
+  # Load mortality data for specific year
   mortality_data <- reactive({
     year_selected <- input$year
-    
-    mortality_df <- read.csv("WMI_RelevantYears.csv", check.names = FALSE)
+    mortality_df <- full_mortality_data()
     
     # Match with the correct winter mortality column
     mortality_col <- paste0("Winter mortality index ", year_selected)
@@ -87,13 +100,12 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
-      setView(lng = -2, lat = 54, zoom = 6)  # Adjusted view to better center on UK
+      setView(lng = -2, lat = 54, zoom = 6)
   })
   
-  # Update map
+  # Update map with click events
   observe({
     req(shape_data())
-    
     mort_data <- mortality_data()
     shapes <- shape_data()
     
@@ -104,11 +116,12 @@ server <- function(input, output, session) {
         clearControls() %>%
         addPolygons(
           data = shapes,
-          fillColor = "#808080",  # Gray color for no data
+          fillColor = "#808080",
           fillOpacity = 0.7,
           weight = 1,
           color = "#444444",
-          label = ~LAD22NM
+          label = ~LAD22NM,
+          layerId = ~LAD22CD  # Add layerId for click events
         )
       return()
     }
@@ -125,7 +138,7 @@ server <- function(input, output, session) {
       na.color = "#808080"
     )
     
-    # Create labels with more information
+    # Create labels
     labels <- lapply(seq_len(nrow(mapped_data)), function(i) {
       if(is.na(mapped_data$mortality[i])) {
         return(HTML(paste0(
@@ -151,16 +164,12 @@ server <- function(input, output, session) {
         weight = 1,
         color = "#444444",
         label = labels,
-        labelOptions = labelOptions(
-          style = list(
-            "font-family" = "sans-serif",
-            padding = "6px",
-            "background-color" = "white",
-            "border-color" = "rgba(0,0,0,0.5)",
-            "border-radius" = "4px"
-          ),
-          textsize = "13px",
-          direction = "auto"
+        layerId = ~LAD22CD,  # Add layerId for click events
+        highlight = highlightOptions(
+          weight = 2,
+          color = "#666",
+          fillOpacity = 0.7,
+          bringToFront = TRUE
         )
       ) %>%
       addLegend(
@@ -173,20 +182,63 @@ server <- function(input, output, session) {
       )
   })
   
-  # Debug output
-  output$debug_info <- renderPrint({
-    mort_data <- mortality_data()
-    shapes <- shape_data()
+  # Handle map clicks
+  observeEvent(input$map_shape_click, {
+    click <- input$map_shape_click
+    selected_region(click$id)
+  })
+  
+  # Display selected area name
+  output$selected_area <- renderText({
+    req(selected_region())
+    area_data <- full_mortality_data()
+    area_name <- area_data$`Area name`[area_data$`Area code` == selected_region()]
+    paste("Selected Area:", area_name)
+  })
+  
+  # Create time series plot
+  output$time_series <- renderPlot({
+    req(selected_region())
     
-    cat("Debug Information:\n")
-    if(is.null(mort_data)) {
-      cat("No mortality data available for selected year\n")
-    } else {
-      cat("Number of areas in mortality data:", nrow(mort_data), "\n")
+    # Get the data for the selected region
+    mortality_df <- full_mortality_data()
+    region_data <- mortality_df[mortality_df$`Area code` == selected_region(), ]
+    
+    # Create a data frame for plotting
+    plot_data <- data.frame(
+      Year = 2012:2020,
+      WMI = NA,
+      Lower = NA,
+      Upper = NA
+    )
+    
+    # Fill in the data
+    for(year in 2012:2020) {
+      wmi_col <- paste0("Winter mortality index ", year)
+      lower_col <- paste0("Lower Confidence Limit ", year)
+      upper_col <- paste0("Upper Confidence Limit ", year)
+      
+      plot_data$WMI[plot_data$Year == year] <- region_data[[wmi_col]]
+      plot_data$Lower[plot_data$Year == year] <- region_data[[lower_col]]
+      plot_data$Upper[plot_data$Year == year] <- region_data[[upper_col]]
     }
-    cat("Number of areas in shape data:", nrow(shapes), "\n")
-    cat("\nFirst few mortality records:\n")
-    if(!is.null(mort_data)) print(head(mort_data))
+    
+    # Create the plot
+    ggplot(plot_data, aes(x = Year, y = WMI)) +
+      geom_ribbon(aes(ymin = Lower, ymax = Upper), fill = "gray80", alpha = 0.5) +
+      geom_line(color = "blue", size = 1) +
+      geom_point(color = "blue", size = 3) +
+      theme_minimal() +
+      labs(
+        title = "Winter Mortality Index Over Time",
+        y = "Winter Mortality Index",
+        caption = "Gray band shows 95% confidence interval"
+      ) +
+      theme(
+        plot.title = element_text(size = 12, face = "bold"),
+        axis.title = element_text(size = 10),
+        plot.caption = element_text(size = 8)
+      )
   })
   
   # Summary statistics
