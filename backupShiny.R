@@ -21,9 +21,15 @@ ui <- fluidPage(
                   value = 2012,
                   sep = ""),
       
+      radioButtons("display_mode", 
+                   "Display Mode:",
+                   choices = c("Fuel Poverty" = "fuel",
+                               "Winter Mortality" = "mortality",
+                               "Combined View" = "combined")),
+      
       # View type selector
       radioButtons("view_type", 
-                   "Display Type:",
+                   "View Type:",
                    choices = c("Total Numbers" = "total",
                                "Percentage" = "percent")),
       
@@ -43,13 +49,16 @@ ui <- fluidPage(
       
       # Info box for hovering over regions
       absolutePanel(
-        id = "hover_info",
+        id = "changes_box",
         class = "panel panel-default",
         fixed = TRUE,
         draggable = TRUE,
-        top = 60, left = "auto", right = 20, bottom = "auto",
-        width = 200, height = "auto",
-        textOutput("hover_text")
+        top = 10, right = 10,
+        width = 200,
+        style = "padding: 10px; background: white; border-radius: 5px;",
+        h4("Year-on-Year Changes"),
+        textOutput("fuel_poverty_change"),
+        textOutput("mortality_change")
       )
     )
   )
@@ -58,7 +67,7 @@ ui <- fluidPage(
 # Server logic
 server <- function(input, output, session) {
   
-  # Define reactive expressions for data loading
+  ### fuel poverty data reactive
   fuel_poverty_data <- reactive({
     year_selected <- input$year
     file_path <- file.path("Final Data Cleaned", 
@@ -75,6 +84,7 @@ server <- function(input, output, session) {
     read.csv(file_path)
   })
   
+  ### load shapefile data
   shape_data <- reactive({
     # Print working directory for debugging
     print(paste("Working directory:", getwd()))
@@ -89,7 +99,7 @@ server <- function(input, output, session) {
     read.csv("fuel_poverty_changes.csv")
   })
   
-  # Create icons for different sizes
+  ### Icons for year on year indicators
   icons <- list(
     small_up = makeIcon(
       iconUrl = "icons/small-up-arrow.png",
@@ -123,7 +133,7 @@ server <- function(input, output, session) {
     )
   )
   
-  # Create the base map
+  # create base map from leaflet (OpenSourceMap)
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
@@ -134,7 +144,7 @@ server <- function(input, output, session) {
                   color = "black")
   })
   
-  # Update map when inputs change
+  # Observe block - interactive changes
   observe({
     req(fuel_poverty_data(), shape_data())
     
