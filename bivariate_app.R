@@ -17,7 +17,7 @@ ui <- fluidPage(
       sliderInput("year", 
                   "Select Year:",
                   min = 2012,
-                  max = 2020,
+                  max = 2021,
                   value = 2012,
                   sep = ""),
       
@@ -49,6 +49,7 @@ server <- function(input, output, session) {
   
   # Load and process data
   get_combined_data <- reactive({
+    year_selected <- input$year
     # Read mortality data
     mortality_df <- read.csv("WMI_RelevantYears.csv", check.names = FALSE)
     
@@ -69,6 +70,10 @@ server <- function(input, output, session) {
     
     # Check if mortality data exists for selected year
     if(!mortality_col %in% names(mortality_df)) {
+      return(NULL)
+    }
+    
+    if(year_selected == 2021) {
       return(NULL)
     }
     
@@ -224,11 +229,19 @@ server <- function(input, output, session) {
   
   # Warning message
   output$warning_message <- renderUI({
-    if(is.null(get_combined_data())) {
+    year_selected <- input$year
+    
+    if(year_selected == 2021) {
       div(
         style = "color: red; background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin-top: 10px;",
         icon("exclamation-triangle"),
-        "No data available for", input$year
+        "No winter mortality data available for 2021"
+      )
+    } else if(is.null(get_combined_data())) {
+      div(
+        style = "color: red; background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin-top: 10px;",
+        icon("exclamation-triangle"),
+        "No data available for", year_selected
       )
     }
   })
