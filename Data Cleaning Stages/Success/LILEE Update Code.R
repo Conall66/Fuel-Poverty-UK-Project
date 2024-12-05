@@ -39,7 +39,7 @@ update_fuel_poverty <- function(year) {
 }
 
 # Process years 2012-2019
-years <- 2012:2018
+years <- 2012:2019
 summaries <- lapply(years, update_fuel_poverty)
 
 # Combine summaries into one dataframe

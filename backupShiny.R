@@ -67,6 +67,18 @@ ui <- fluidPage(
 # Server logic
 server <- function(input, output, session) {
   
+  ### fuel poverty data reactive
+  fuel_poverty_data <- reactive({
+    year_selected <- input$year
+    file_path <- file.path("Final Data Cleaned", 
+                           paste0("Sub_Reg_Data_", year_selected, "_LILEE.csv"))
+    
+    # Print file path for debugging
+    print(paste("Attempting to read:", file_path))
+    
+    # Check if file exists
+    if (!file.exists(file_path)) {
+      stop(paste("File not found:", file_path))
     }
     
     read.csv(file_path)
@@ -132,6 +144,9 @@ server <- function(input, output, session) {
                   color = "black")
   })
   
+  # Observe block - interactive changes
+  observe({
+    req(fuel_poverty_data(), shape_data())
     
     # Get the data
     data <- fuel_poverty_data()
@@ -148,7 +163,58 @@ server <- function(input, output, session) {
     # Join the data
     mapped_data <- shapes %>%
       left_join(data, by = c("LAD22CD" = "Area.Codes"))
-   
+    
+    # Create color palette
+    pal <- colorBin(
+      "YlOrRd", 
+      domain = if(input$view_type == "total") mapped_data$fuel_poor 
+      else mapped_data$proportion,
+      bins = 7,
+      na.color = "#808080"
+    )
+    
+    # Base map update
+    map_proxy <- leafletProxy("map") %>%
+      clearShapes() %>% #clears old view
+      clearMarkers() %>%  # clears markers upon toggle
+      addPolygons(
+        data = mapped_data,
+        fillColor = ~pal(if(input$view_type == "total") fuel_poor else proportion),
+        fillOpacity = 0.7,
+        weight = 1,
+        color = "#444444",
+        highlightOptions = highlightOptions(
+          weight = 2,
+          color = "#666",
+          fillOpacity = 0.9,
+          bringToFront = TRUE
+        ),
+        label = ~lapply(paste0(
+          "<b>", LAD22NM, "</b><br/>",
+          "Fuel Poor: ", formatC(fuel_poor, format="f", big.mark=",", digits=0), "<br/>",
+          "Proportion: ", formatC(proportion, format="f", digits=1), "%"
+        ), HTML),
+        labelOptions = labelOptions(
+          style = list(
+            "font-family" = "sans-serif",
+            padding = "6px",
+            "background-color" = "white",
+            "border-color" = "rgba(0,0,0,0.5)",
+            "border-radius" = "4px"
+          ),
+          textsize = "13px",
+          direction = "auto"
+        )
+      ) %>%
+      addLegend(
+        position = "bottomright",
+        pal = pal,
+        values = if(input$view_type == "total") mapped_data$fuel_poor 
+        else mapped_data$proportion,
+        title = if(input$view_type == "total") "Fuel Poor Households"
+        else "Proportion (%)",
+        opacity = 0.7
+      )
     
     # Add arrows if toggle is on
     if (input$show_arrows) {
