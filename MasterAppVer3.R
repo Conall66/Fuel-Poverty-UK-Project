@@ -40,6 +40,17 @@ icons <- list(
   )
 )
 
+# Create bivariate color matrix function
+bivariate_color_matrix <- function() {
+  matrix(
+    c("#e8e8e8", "#b4d3e8", "#3c9ac7",   # Low mortality
+      "#e4c1a9", "#9fb0d3", "#2c7bb6",    # Medium mortality
+      "#df9a87", "#8c8dbe", "#1c4ba0"),   # High mortality
+    nrow = 3, 
+    byrow = TRUE
+  )
+}
+
 ui <- fluidPage(
   titlePanel("England Fuel Poverty & Winter Mortality Dashboard"),
   
@@ -91,14 +102,20 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   selected_region <- reactiveVal(NULL)
   
+  ###  DATA LOADING FUNCTIONS
+  
   safe_read_csv <- function(file_path, ...) {
     tryCatch(read.csv(file_path, ...), error = function(e) NULL)
   }
+  
+  ### FUEL POVERTY DATA LOADING
   
   fuel_poverty_data <- reactive({
     file_path <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", input$year)
     safe_read_csv(file_path)
   })
+  
+  ### MORTALITY DATA LOADING
   
   full_mortality_data <- reactive({
     safe_read_csv("WMI_RelevantYears.csv", check.names = FALSE)
@@ -130,6 +147,8 @@ server <- function(input, output, session) {
     )
   })
   
+  ### BIVARIATE DATA LOADING
+  
   output$error_message <- renderUI({
     if(is.null(shape_data())) {
       return(div(class = "alert alert-danger", "Error: Unable to load map data"))
@@ -150,6 +169,11 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(-2, 54, 6)
   })
+  
+  
+  
+  ### OBSERVE BLOCK FROM VER 2
+  
   
   observe({
     req(shape_data())
