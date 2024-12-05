@@ -147,6 +147,43 @@ server <- function(input, output, session) {
     )
   })
   
+  get_bivariate_data <- reactive({
+    year_selected <- input$year
+    mortality_df <- full_mortality_data()
+    if(is.null(mortality_df)) return(NULL)
+    
+    fp_data <- fuel_poverty_data()
+    if(is.null(fp_data)) return(NULL)
+    
+    mortality_col <- paste0("Winter mortality index ", year_selected)
+    if(!mortality_col %in% names(mortality_df)) return(NULL)
+    
+    combined_data <- data.frame(
+      Area_Code = mortality_df$`Area code`,
+      Area_Name = mortality_df$`Area name`,
+      Mortality = as.numeric(mortality_df[[mortality_col]]),
+      Fuel_Poverty = fp_data$proportion
+    )
+    
+    combined_data <- combined_data[complete.cases(combined_data), ]
+    
+    combined_data$Mortality_Class <- cut(combined_data$Mortality, 
+                                         breaks = quantile(combined_data$Mortality, 
+                                                           probs = c(0, 1/3, 2/3, 1), 
+                                                           na.rm = TRUE),
+                                         labels = 1:3,
+                                         include.lowest = TRUE)
+    
+    combined_data$Fuel_Poverty_Class <- cut(combined_data$Fuel_Poverty, 
+                                            breaks = quantile(combined_data$Fuel_Poverty, 
+                                                              probs = c(0, 1/3, 2/3, 1), 
+                                                              na.rm = TRUE),
+                                            labels = 1:3,
+                                            include.lowest = TRUE)
+    
+    return(combined_data)
+  })
+  
   ### BIVARIATE DATA LOADING
   
   output$error_message <- renderUI({
@@ -197,6 +234,81 @@ server <- function(input, output, session) {
         )
       }
       
+      pal <- colorBin(
+        "YlOrRd",
+        domain = mapped_data[[value_col]],
+        bins = 7,
+        na.color = "#808080"
+      )
+      
+      map_proxy <- leafletProxy("map") %>%
+        clearShapes() %>%
+        clearMarkers() %>%
+        clearControls() %>%
+        addPolygons(
+          data = mapped_data,
+          fillColor = ~pal(get(value_col)),
+          fillOpacity = 0.7,
+          weight = 1,
+          color = "#444444",
+          label = ~sprintf(
+            "<div style='font-family: sans-serif; padding: 8px;'><strong>%s</strong><br/>%s: %s</div>",
+            LAD22NM,
+            if(input$fuel_metric == "total") "Fuel Poor Households" else "Fuel Poverty Rate",
+            if(input$fuel_metric == "total") format(get(value_col), big.mark=",") else paste0(round(get(value_col), 1), "%")
+          ) %>% lapply(HTML),
+          layerId = ~LAD22CD,
+          highlightOptions = highlightOptions(
+            weight = 2,
+            color = "#666",
+            fillOpacity = 0.9,
+            bringToFront = TRUE
+          )
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          pal = pal,
+          values = mapped_data[[value_col]],
+          title = if(input$fuel_metric == "total") "Fuel Poor Households" else "Fuel Poverty Rate (%)",
+          opacity = 0.7
+        )
+      
+      if(input$show_changes) {
+        changes <- changes_data() %>%
+          filter(Year == input$year)
+        
+        if(!is.null(changes) && nrow(changes) > 0) {
+          changes_with_loc <- changes %>%
+            left_join(centroids_df, by = "Area_Codes") %>%
+            mutate(
+              icon_type = case_when(
+                Percent_Change > 35 ~ "large_up",
+                Percent_Change > 25 ~ "medium_up",
+                Percent_Change > 20 ~ "small_up",
+                Percent_Change < -35 ~ "large_down",
+                Percent_Change < -25 ~ "medium_down",
+                Percent_Change < -20 ~ "small_down",
+                TRUE ~ NA_character_
+              )
+            ) %>%
+            filter(!is.na(icon_type))
+          
+          for(icon_type in unique(changes_with_loc$icon_type)) {
+            subset_data <- changes_with_loc[changes_with_loc$icon_type == icon_type, ]
+            if(nrow(subset_data) > 0) {
+              map_proxy %>%
+                addMarkers(
+                  data = subset_data,
+                  lng = ~Longitude,
+                  lat = ~Latitude,
+                  icon = icons[[icon_type]],
+                  label = ~sprintf("Change: %+.1f%%", Percent_Change)
+                )
+            }
+          }
+        }
+      }
+      
     } else if(input$view_mode == "mortality") {
       data <- mortality_data()
       if(is.null(data)) return()
@@ -204,97 +316,92 @@ server <- function(input, output, session) {
       mapped_data <- shapes %>%
         left_join(data, by = c("LAD22CD" = "Area_Codes"))
       
-      value_col <- "mortality"
-    } else {
-      return()
-    }
-    
-    if(all(is.na(mapped_data[[value_col]]))) {
-      mapped_data[[value_col]] <- 0  # Set default value
-    }
-    
-    pal <- colorBin(
-      "YlOrRd", 
-      domain = if(!is.null(mapped_data[[value_col]])) {
-        na.omit(mapped_data[[value_col]])
-      } else {
-        c(0, 1)  # default domain if data is NULL
-      },
-      bins = 7,
-      na.color = "#808080"
-    )
-    
-    map_proxy <- leafletProxy("map") %>%
-      clearShapes() %>%
-      clearMarkers() %>%
-      clearControls() %>%
-      addPolygons(
-        data = mapped_data,
-        fillColor = ~pal(get(value_col)),
-        fillOpacity = 0.7,
-        weight = 1,
-        color = "#444444",
-        layerId = ~LAD22CD,
-        highlightOptions = highlightOptions(
-          weight = 2,
-          color = "#666",
-          fillOpacity = 0.9,
-          bringToFront = TRUE
-        ),
-        label = ~sprintf(
-          "<div style='font-family: sans-serif; padding: 8px;'><strong>%s</strong><br/>%s: %s</div>",
-          LAD22NM,
-          if(input$view_mode == "fuel") "Fuel Poor Households" else "Winter Mortality Index",
-          if(input$view_mode == "fuel" && input$fuel_metric == "total") 
-            format(fuel_poor, big.mark=",") 
-          else round(get(value_col), 2)
-        ) %>% lapply(HTML)
-      ) %>%
-      addLegend(
-        position = "bottomright",
-        pal = pal,
-        values = mapped_data[[value_col]],
-        title = if(input$view_mode == "fuel") 
-          if(input$fuel_metric == "total") "Fuel Poor Households" 
-        else "Proportion (%)"
-        else "Winter Mortality Index",
-        opacity = 0.7
+      pal <- colorBin(
+        "YlOrRd",
+        domain = mapped_data$mortality,
+        bins = 7,
+        na.color = "#808080"
       )
-    
-    if(input$view_mode == "fuel" && input$show_changes) {
-      changes <- changes_data() %>%
-        filter(Year == input$year)
       
-      if(!is.null(changes) && nrow(changes) > 0) {
-        changes_with_loc <- changes %>%
-          left_join(centroids_df, by = "Area_Codes") %>%
-          mutate(
-            icon_type = case_when(
-              Percent_Change > 35 ~ "large_up",
-              Percent_Change > 25 ~ "medium_up",
-              Percent_Change > 20 ~ "small_up",
-              Percent_Change < -35 ~ "large_down",
-              Percent_Change < -25 ~ "medium_down",
-              Percent_Change < -20 ~ "small_down",
-              TRUE ~ NA_character_
-            )
-          ) %>%
-          filter(!is.na(icon_type))
-        
-        for(icon_type in unique(changes_with_loc$icon_type)) {
-          subset_data <- changes_with_loc[changes_with_loc$icon_type == icon_type, ]
-          if(nrow(subset_data) > 0) {
-            map_proxy <- map_proxy %>%
-              addMarkers(
-                data = subset_data,
-                lng = ~Longitude,
-                lat = ~Latitude,
-                icon = icons[[icon_type]],
-                label = ~sprintf("Change: %+.1f%%", Percent_Change)
-              )
-          }
+      leafletProxy("map") %>%
+        clearShapes() %>%
+        clearControls() %>%
+        addPolygons(
+          data = mapped_data,
+          fillColor = ~pal(mortality),
+          fillOpacity = 0.7,
+          weight = 1,
+          color = "#444444",
+          label = ~sprintf(
+            "<div style='font-family: sans-serif; padding: 8px;'><strong>%s</strong><br/>Mortality Index: %.1f</div>",
+            LAD22NM, mortality
+          ) %>% lapply(HTML),
+          layerId = ~LAD22CD,
+          highlightOptions = highlightOptions(
+            weight = 2,
+            color = "#666",
+            fillOpacity = 0.9,
+            bringToFront = TRUE
+          )
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          pal = pal,
+          values = mapped_data$mortality,
+          title = "Winter Mortality Index",
+          opacity = 0.7
+        )
+      
+    } else if(input$view_mode == "bivariate") {
+      bivariate_data <- get_bivariate_data()
+      if(is.null(bivariate_data)) return()
+      
+      mapped_data <- shapes %>%
+        left_join(bivariate_data, by = c("LAD22CD" = "Area_Code"))
+      
+      mapped_data$fill_color <- NA
+      for(i in 1:nrow(mapped_data)) {
+        if(!is.na(mapped_data$Mortality_Class[i]) && !is.na(mapped_data$Fuel_Poverty_Class[i])) {
+          mapped_data$fill_color[i] <- bivariate_color_matrix()[
+            as.numeric(mapped_data$Mortality_Class[i]),
+            as.numeric(mapped_data$Fuel_Poverty_Class[i])
+          ]
         }
       }
+      
+      labels <- lapply(seq_len(nrow(mapped_data)), function(i) {
+        if(is.na(mapped_data$Mortality[i]) || is.na(mapped_data$Fuel_Poverty[i])) {
+          return(HTML(paste0(
+            "<b>", mapped_data$LAD22NM[i], "</b><br/>",
+            "No data available"
+          )))
+        } else {
+          return(HTML(paste0(
+            "<b>", mapped_data$LAD22NM[i], "</b><br/>",
+            "Winter Mortality Index: ", round(mapped_data$Mortality[i], 1), "<br/>",
+            "Fuel Poverty: ", round(mapped_data$Fuel_Poverty[i], 1), "%"
+          )))
+        }
+      })
+      
+      leafletProxy("map") %>%
+        clearShapes() %>%
+        clearControls() %>%
+        addPolygons(
+          data = mapped_data,
+          fillColor = ~fill_color,
+          fillOpacity = 0.7,
+          weight = 1,
+          color = "#444444",
+          label = labels,
+          layerId = ~LAD22CD,
+          highlightOptions = highlightOptions(
+            weight = 2,
+            color = "#666",
+            fillOpacity = 0.9,
+            bringToFront = TRUE
+          )
+        )
     }
   })
   
