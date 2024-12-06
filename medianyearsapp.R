@@ -63,7 +63,6 @@ ui <- fluidPage(
                             "Winter Mortality" = "mortality",
                             "Combined Analysis" = "bivariate")),
              textOutput("view_explanation"),
-    
              conditionalPanel(
                condition = "input.view_mode == 'fuel'",
                selectInput("fuel_metric", "Display:",
@@ -71,7 +70,7 @@ ui <- fluidPage(
                              "Total Numbers" = "total",
                              "Percentage" = "percent"
                            ),
-                           width = "200px"  # Adjust width as needed
+                           width = "200px"
                ),
                checkboxInput("show_changes", "Show Year-on-Year Changes", FALSE)
              ),
@@ -83,6 +82,14 @@ ui <- fluidPage(
              verbatimTextOutput("summary_stats")
            ),
            
+           # Bivariate legend in left column
+           conditionalPanel(
+             condition = "input.view_mode == 'bivariate'",
+             wellPanel(
+               plotOutput("bivariate_legend", height = "150px", width = "150px")
+             )
+           ),
+           
            conditionalPanel(
              condition = "input.view_mode == 'mortality'",
              wellPanel(
@@ -91,14 +98,15 @@ ui <- fluidPage(
              )
            )
     ),
-    ### bivariate map appear upon 'combined data' select
+    
     column(9,
            leafletOutput("map", height = "700px"),
+           # Temporal visualization below map
            conditionalPanel(
              condition = "input.view_mode == 'bivariate'",
-             absolutePanel(
-               bottom = 10, right = 10,
-               plotOutput("bivariate_legend", height = "200px", width = "200px")
+             wellPanel(
+               h4(textOutput("selected_region_title")),
+               plotOutput("temporal_bivariate", height = "150px")
              )
            )
     )
@@ -106,6 +114,9 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
+  global_medians <- readRDS("global_medians.rds")
+  
   selected_region <- reactiveVal(NULL)
   
   ###  DATA LOADING FUNCTIONS
@@ -183,21 +194,55 @@ server <- function(input, output, session) {
     
     combined_data <- combined_data[complete.cases(combined_data), ]
     
+    # Use global medians for classification
     combined_data$Mortality_Class <- cut(combined_data$Mortality, 
-                                         breaks = quantile(combined_data$Mortality, 
-                                                           probs = c(0, 1/2, 1), 
-                                                           na.rm = TRUE),
-                                         labels = 2:1,  # Changed from 1:3 to 3:1
+                                         breaks = c(-Inf, global_medians$mortality_median, Inf),
+                                         labels = 2:1,
                                          include.lowest = TRUE)
     
     combined_data$Fuel_Poverty_Class <- cut(combined_data$Fuel_Poverty, 
-                                            breaks = quantile(combined_data$Fuel_Poverty, 
-                                                              probs = c(0, 1/2, 1), 
-                                                              na.rm = TRUE),
-                                            labels = 2:1,  # Changed from 1:3 to 3:1
+                                            breaks = c(-Inf, global_medians$fuel_poverty_median, Inf),
+                                            labels = 2:1,
                                             include.lowest = TRUE)
     
     return(combined_data)
+  })
+  
+  selected_bivariate_region <- reactiveVal(NULL)
+  
+  # Function to get historical bivariate data for a region
+  get_historical_bivariate <- reactive({
+    req(selected_bivariate_region())
+    region_id <- selected_bivariate_region()
+    
+    years <- 2012:2020
+    historical_data <- data.frame(
+      Year = years,
+      Mortality = NA,
+      Fuel_Poverty = NA
+    )
+    
+    mortality_df <- full_mortality_data()
+    
+    for(year in years) {
+      # Get fuel poverty data for year
+      fp_file <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", year)
+      fp_data <- safe_read_csv(fp_file)
+      
+      if(!is.null(fp_data)) {
+        mortality_col <- paste0("Winter mortality index ", year)
+        
+        if(mortality_col %in% names(mortality_df)) {
+          historical_data$Mortality[historical_data$Year == year] <- 
+            mortality_df[[mortality_col]][mortality_df$`Area code` == region_id]
+          
+          historical_data$Fuel_Poverty[historical_data$Year == year] <- 
+            fp_data$proportion[fp_data$Area.Codes == region_id]
+        }
+      }
+    }
+    
+    return(historical_data[complete.cases(historical_data), ])
   })
   
   # Improved bivariate legend using ggplot2
@@ -247,6 +292,55 @@ server <- function(input, output, session) {
         "No data available for", year_selected
       )
     }
+  })
+  
+  # Output for region title
+  output$selected_region_title <- renderText({
+    req(selected_bivariate_region())
+    region_name <- shape_data()$LAD22NM[shape_data()$LAD22CD == selected_bivariate_region()]
+    paste("Historical Bivariate Pattern for", region_name)
+  })
+  
+  # Output for temporal small multiples
+  output$temporal_bivariate <- renderPlot({
+    req(selected_bivariate_region())
+    hist_data <- get_historical_bivariate()
+    
+    # Apply classifications using global medians
+    hist_data <- hist_data %>%
+      mutate(
+        Mortality_Class = cut(Mortality, 
+                              breaks = c(-Inf, global_medians$mortality_median, Inf),
+                              labels = 2:1,
+                              include.lowest = TRUE),
+        Fuel_Poverty_Class = cut(Fuel_Poverty, 
+                                 breaks = c(-Inf, global_medians$fuel_poverty_median, Inf),
+                                 labels = 2:1,
+                                 include.lowest = TRUE),
+        fill_color = NA_character_
+      )
+    
+    # Assign colors
+    for(i in 1:nrow(hist_data)) {
+      if(!is.na(hist_data$Mortality_Class[i]) && !is.na(hist_data$Fuel_Poverty_Class[i])) {
+        hist_data$fill_color[i] <- bivariate_colour_matrix()[
+          as.numeric(hist_data$Fuel_Poverty_Class[i]),
+          as.numeric(hist_data$Mortality_Class[i])
+        ]
+      }
+    }
+    
+    # Create the plot
+    ggplot(hist_data, aes(x = 1, y = 1)) +
+      facet_wrap(~Year, nrow = 1) +
+      geom_tile(aes(fill = fill_color)) +
+      scale_fill_identity() +
+      theme_void() +
+      theme(
+        strip.text = element_text(size = 8),
+        plot.margin = margin(5, 5, 5, 5),
+        panel.spacing = unit(2, "points")
+      )
   })
   
   output$map <- renderLeaflet({
@@ -456,6 +550,12 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     if(input$view_mode == "mortality") {
       selected_region(input$map_shape_click$id)
+    }
+  })
+  
+  observeEvent(input$map_shape_click, {
+    if(input$view_mode == "bivariate") {
+      selected_bivariate_region(input$map_shape_click$id)
     }
   })
   
