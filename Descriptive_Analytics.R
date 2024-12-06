@@ -43,10 +43,10 @@ Years <- c(seq(start_yr, final_yr, 1))
 # Assuming files will only be added with new years after 2021
 
 # Create intialised arrays to store values
-means <- numeric(length(Fuel_Poverty_files))
-stds <- numeric(length(Fuel_Poverty_files))
-meds <- numeric(length(Fuel_Poverty_files))
-iqrs <- numeric(length(Fuel_Poverty_files))
+means_fp <- numeric(length(Fuel_Poverty_files))
+std_fp <- numeric(length(Fuel_Poverty_files))
+med_fp <- numeric(length(Fuel_Poverty_files))
+iqr_fp <- numeric(length(Fuel_Poverty_files))
 
 numfiles <- length(Fuel_Poverty_files)
 proportion_data <- data.frame(Year = numeric(0), proportion = numeric(0))
@@ -69,10 +69,10 @@ for(i in 1:numfiles){
     iqrd <- IQR(fuel_poor_prop, na.rm = TRUE)     # 'IQR()' to calculate interquartile range
   }
   
-  means[i] <- meand
-  stds[i] <- stdd
-  meds[i] <- medd
-  iqrs[i] <- iqrd
+  means_fp[i] <- meand
+  std_fp[i] <- stdd
+  med_fp[i] <- medd
+  iqr_fp[i] <- iqrd
   
   # boxplot
   box_name <- paste0("Fuel Poverty in ", Years[i])
@@ -143,4 +143,120 @@ dev.off()
 
 # Winter Mortality Data ---------------------------------------------------
 
+WMI_data <- read.csv("mortality_data.csv")
 
+# Calculate mean, sd, median and iqr for each year, boxplots and ditribution
+# curves for each, then collate total plots
+
+# Create folder for boxplots
+if(!dir.exists("Boxplots WMI Data")){
+  dir.create("Boxplots WMI Data")
+}
+
+# Create folder for distribution plots
+if(!dir.exists("Distribution WMI Data")){
+  dir.create("Distribution WMI Data")
+}
+
+# Create intialised arrays to store values
+means_wmi <- numeric(length(WMI_data)*length(Years))
+std_wmi <- numeric(length(WMI_data)*length(Years))
+med_wmi <- numeric(length(WMI_data)*length(Years))
+iqr_wmi <- numeric(length(WMI_data)*length(Years))
+
+# numfiles <- length(Fuel_Poverty_files)
+proportion_data_WMI <- data.frame(Year = numeric(0), WMI = numeric(0))
+
+upd_idx <- 66 # On this column that 2012 data begins
+
+for(i in 1:length(Years)-1){
+  
+    col_select <- as.numeric(unlist(WMI_data[upd_idx]))
+    
+    # Calculate statistics and store in the pre-allocated vectors
+    meand <- mean(col_select, na.rm = TRUE)  # 'mean()' to calculate mean
+    stdd <- sd(col_select, na.rm = TRUE)     # 'sd()' to calculate standard deviation
+    medd <- median(col_select, na.rm = TRUE)  # 'median()' to calculate median
+    iqrd <- IQR(col_select, na.rm = TRUE)     # 'IQR()' to calculate interquartile range
+  
+    # Update separate arrays
+    means_wmi[i] <- meand
+    std_wmi[i] <- stdd
+    med_wmi[i] <- medd
+    iqr_wmi[i] <- iqrd
+  
+    # boxplot
+    box_name <- paste0("Winter Mortality Index in ", Years[i])
+    output_file <- paste0("Boxplots WMI Data/", box_name, ".png")
+    png(output_file)
+    
+    boxplot(col_select,
+            main = box_name,
+            ylab = "Winter Mortality Index",
+            col = "lightBlue"
+    )
+    
+    dev.off()
+    
+    # distribution curve
+    dist_name <- paste0("Winter Mortality Index Distribution ", Years[i])
+    output_file_2 <- paste0("Distribution WMI Data/", dist_name, ".png")
+    png(output_file_2)
+    
+    plot(density(col_select),
+         main = dist_name,
+         col = "lightBlue", lwd = 2)
+    abline(v = medd, col = "red", lwd = 2, lty = 2)  # Red dashed line for the median
+    abline(v = meand, col = "blue", lwd = 2, lty = 2)
+    abline(v = meand - stdd, col = "grey", lwd = 2, lty = 2)
+    abline(v = meand + stdd, col = "grey", lwd = 2, lty = 2)
+    
+    dev.off()
+    
+    # add proportions to initialised dataframe
+    # Ensure `year_values` has the same length as `col_select`
+    year_values <- rep(Years[i], length(col_select))
+    
+    # Add proportions to the data frame
+    proportion_data_WMI <- rbind(proportion_data_WMI, 
+                                 data.frame(Year = year_values, WMI = col_select))
+    
+    upd_idx <- upd_idx + 3
+    
+}
+
+
+# boxplot
+box_name <- paste0("Winter Mortality Index in ", Years[1], "-", Years[length(Years)])
+output_file <- paste0("Boxplots WMI Data/", box_name, ".png")
+png(output_file)
+
+boxplot(proportion_data_WMI$proportion,
+        main = box_name,
+        ylab = "Winter Mortality Index",
+        col = "lightBlue"
+)
+
+dev.off()
+
+# distribution curve
+dist_name <- paste0("Winter Mortality Index Values in ", Years[1], "-", Years[length(Years)])
+output_file_2 <- paste0("Distribution WMI Data/", dist_name, ".png")
+png(output_file_2)
+
+plot(density(proportion_data_WMI$WMI),
+     main = dist_name,
+     col = "lightBlue", lwd = 2)
+abline(v = median(proportion_data_WMI$WMI), col = "red", lwd = 2, lty = 2)
+abline(v = mean(proportion_data_WMI$WMI), col = "blue", lwd = 2, lty = 2)
+abline(v = mean(proportion_data_WMI$WMI) - sd(proportion_data_WMI$WMI), 
+       col = "grey", lwd = 2, lty = 2)
+abline(v = mean(proportion_data_WMI$WMI) + sd(proportion_data_WMI$WMI), 
+       col = "grey", lwd = 2, lty = 2)
+
+dev.off()
+
+
+# WMI and Fuel Poverty Relationship ---------------------------------------
+
+# With confidence levels
