@@ -169,7 +169,7 @@ proportion_data_WMI <- data.frame(Year = numeric(0), WMI = numeric(0))
 
 upd_idx <- 66 # On this column that 2012 data begins
 
-for(i in 1:length(Years)-1){
+for(i in 1:(length(Years)-1)){
   
     col_select <- as.numeric(unlist(WMI_data[upd_idx]))
     
@@ -231,7 +231,7 @@ box_name <- paste0("Winter Mortality Index in ", Years[1], "-", Years[length(Yea
 output_file <- paste0("Boxplots WMI Data/", box_name, ".png")
 png(output_file)
 
-boxplot(proportion_data_WMI$proportion,
+boxplot(proportion_data_WMI$WMI,
         main = box_name,
         ylab = "Winter Mortality Index",
         col = "lightBlue"
@@ -255,7 +255,6 @@ abline(v = mean(proportion_data_WMI$WMI) + sd(proportion_data_WMI$WMI),
        col = "grey", lwd = 2, lty = 2)
 
 dev.off()
-
 
 # WMI and Fuel Poverty Relationship ---------------------------------------
 
