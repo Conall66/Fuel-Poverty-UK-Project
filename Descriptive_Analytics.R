@@ -10,6 +10,7 @@ library(summarytools) # Extracting descriptive stats
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(ellipse)
 
 # Input Variables ---------------------------------------------------------
 
@@ -258,4 +259,66 @@ dev.off()
 
 # WMI and Fuel Poverty Relationship ---------------------------------------
 
-# With confidence levels
+# Plot average winter mortality values and average fuel poverty values by year,
+# use Spearman's Rank to evaluate strength of correlation
+
+# Create folder
+
+# Create folder for distribution plots
+if(!dir.exists("Relationship WMI Fuel Pov")){
+  dir.create("Relationship WMI Fuel Pov")
+}
+
+# Initialised dataframe for storing spearman's rank info
+SP_vals <- data.frame(Spearmans = numeric(length(Years)-1), Stat_sign = numeric(length(Years)-1))
+
+upd_idx <- 66
+
+for (item in (1:(length(Years)-1))){
+  year <- Years[item]
+  # Extract fuel poverty data
+  fuel_pov_file <- paste0("Final Data Cleaned/Sub_Reg_Data_", year, "_LILEE.csv")
+  fuel_pov <- read.csv(fuel_pov_file)
+  fuel_pov_prop_2 <- as.numeric(fuel_pov$proportion)
+  
+  # Extract WMI value
+  col_select_2 <- as.numeric(unlist(WMI_data[upd_idx]))
+  
+  combined_data <- data.frame(fuel_pov_prop_2, col_select_2)
+  
+  # Spearmans Rank
+  spearman_corr <- cor(combined_data$fuel_pov_prop_2, combined_data$col_select_2, method = "spearman")
+  # Spearmans Rank
+  spearman_cor_test <- cor.test(combined_data$fuel_pov_prop_2, combined_data$col_select_2, 
+                                method = "spearman",
+                                exact = FALSE,
+                                alternative = "two.sided")
+  # Upd dataframe
+  SP_vals$Spearmans[item] <- spearman_corr
+  SP_vals$Stat_sign[item] <- spearman_cor_test$p.value
+  
+  # Plot against one another
+  ggplot(combined_data, aes(x = fuel_pov_prop_2, y = col_select_2)) +
+    geom_point(color = "blue", size = 3) +  # Scatter points
+    geom_smooth(method = "lm", color = "red", se = FALSE) +  # Linear trend line
+    labs(
+      title = "Scatter Plot of Fuel Poverty vs Winter Mortality",
+      x = "Fuel Poverty (%)",
+      y = "Winter Mortality Index"
+    ) +
+    annotate(
+      "text", 
+      x = max(combined_data$fuel_pov_prop_2) * 0.7, 
+      y = max(combined_data$col_select_2) * 0.9,
+      label = paste("Spearman's rho =", round(spearman_corr, 2)),
+      color = "darkred"
+    ) +
+    theme_minimal()
+    
+  file_name <- paste0("Scatter Plot ", year)
+  file_loc <- paste0("Relationship WMI Fuel Pov/", year, ".png")
+  ggsave(file_loc)
+  
+  upd_idx <- upd_idx + 3
+  
+}
