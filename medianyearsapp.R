@@ -87,6 +87,11 @@ ui <- fluidPage(
              condition = "input.view_mode == 'bivariate'",
              wellPanel(
                plotOutput("bivariate_legend", height = "150px", width = "150px")
+             ),
+             # Add rankings panel here
+             wellPanel(
+               h4("Most Affected Regions (2012-2020)"),
+               tableOutput("fixed_rankings")
              )
            ),
            
@@ -116,6 +121,10 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   global_medians <- readRDS("global_medians.rds")
+  # Add this temporarily to your server function to check the global medians
+  print("Global medians:")
+  print(paste("Mortality median:", global_medians$mortality_median))
+  print(paste("Fuel poverty median:", global_medians$fuel_poverty_median))
   
   selected_region <- reactiveVal(NULL)
   
@@ -163,6 +172,17 @@ server <- function(input, output, session) {
       error = function(e) NULL
     )
   })
+  ### leaderboard ting innit
+  output$fixed_rankings <- renderTable({
+    top_regions <- readRDS("top_regions.rds")
+    data.frame(
+      Region = top_regions$Area_Name,
+      `High-Risk Years` = top_regions$High_High_Count,
+      `Avg WMI` = round(top_regions$Avg_Mortality, 1),
+      `Avg FP%` = paste0(round(top_regions$Avg_Fuel_Poverty, 1), "%"),
+      `Risk Score` = round(top_regions$Risk_Score, 2)
+    )
+  }, align = 'l', width = "100%")
   
   #OUTPUT TEXT EXPLANATION
   output$view_explanation <- renderText({
@@ -210,10 +230,21 @@ server <- function(input, output, session) {
   
   selected_bivariate_region <- reactiveVal(NULL)
   
+  # First define a correct color lookup function
+get_bivariate_color <- function(is_high_mort, is_high_fp) {
+  if(is_high_mort && is_high_fp) return("#30585C")      # High/High
+  if(is_high_mort && !is_high_fp) return("#689E73")     # High/Low
+  if(!is_high_mort && is_high_fp) return("#6277A5")     # Low/High
+  return("#D3D3D3")                                     # Low/Low
+}
+  
   # Function to get historical bivariate data for a region
   get_historical_bivariate <- reactive({
     req(selected_bivariate_region())
     region_id <- selected_bivariate_region()
+    
+    # Print for debugging
+    print(paste("Selected region:", region_id))
     
     years <- 2012:2020
     historical_data <- data.frame(
@@ -233,14 +264,20 @@ server <- function(input, output, session) {
         mortality_col <- paste0("Winter mortality index ", year)
         
         if(mortality_col %in% names(mortality_df)) {
-          historical_data$Mortality[historical_data$Year == year] <- 
-            mortality_df[[mortality_col]][mortality_df$`Area code` == region_id]
+          # Print values for debugging
+          mort_val <- mortality_df[[mortality_col]][mortality_df$`Area code` == region_id]
+          fp_val <- fp_data$proportion[fp_data$Area.Codes == region_id]
+          print(paste("Year:", year, "Mortality:", mort_val, "FP:", fp_val))
           
-          historical_data$Fuel_Poverty[historical_data$Year == year] <- 
-            fp_data$proportion[fp_data$Area.Codes == region_id]
+          historical_data$Mortality[historical_data$Year == year] <- mort_val
+          historical_data$Fuel_Poverty[historical_data$Year == year] <- fp_val
         }
       }
     }
+    
+    # Print results
+    print("Final historical data:")
+    print(historical_data)
     
     return(historical_data[complete.cases(historical_data), ])
   })
@@ -306,31 +343,32 @@ server <- function(input, output, session) {
     req(selected_bivariate_region())
     hist_data <- get_historical_bivariate()
     
-    # Apply classifications using global medians
+    # Apply classifications and assign colors first
     hist_data <- hist_data %>%
       mutate(
-        Mortality_Class = cut(Mortality, 
-                              breaks = c(-Inf, global_medians$mortality_median, Inf),
-                              labels = 2:1,
-                              include.lowest = TRUE),
-        Fuel_Poverty_Class = cut(Fuel_Poverty, 
-                                 breaks = c(-Inf, global_medians$fuel_poverty_median, Inf),
-                                 labels = 2:1,
-                                 include.lowest = TRUE),
+        mort_class = ifelse(Mortality > global_medians$mortality_median, 2, 1),
+        fp_class = ifelse(Fuel_Poverty > global_medians$fuel_poverty_median, 2, 1),
         fill_color = NA_character_
       )
     
-    # Assign colors
+    # Assign colors before plotting
     for(i in 1:nrow(hist_data)) {
-      if(!is.na(hist_data$Mortality_Class[i]) && !is.na(hist_data$Fuel_Poverty_Class[i])) {
-        hist_data$fill_color[i] <- bivariate_colour_matrix()[
-          as.numeric(hist_data$Fuel_Poverty_Class[i]),
-          as.numeric(hist_data$Mortality_Class[i])
-        ]
-      }
+      hist_data$fill_color[i] <- bivariate_colour_matrix()[
+        hist_data$fp_class[i],
+        hist_data$mort_class[i]
+      ]
     }
     
-    # Create the plot
+    # In temporal visualization:
+    print("TEMPORAL COLOR ASSIGNMENTS:")
+    for(i in 1:nrow(hist_data)) {
+      print(paste("Year:", hist_data$Year[i],
+                  "Mort:", ifelse(hist_data$Mortality[i] > global_medians$mortality_median, "HIGH", "LOW"),
+                  "FP:", ifelse(hist_data$Fuel_Poverty[i] > global_medians$fuel_poverty_median, "HIGH", "LOW"),
+                  "Color:", hist_data$fill_color[i]))
+    }
+    
+    # Create plot using pre-assigned colors
     ggplot(hist_data, aes(x = 1, y = 1)) +
       facet_wrap(~Year, nrow = 1) +
       geom_tile(aes(fill = fill_color)) +
@@ -495,21 +533,39 @@ server <- function(input, output, session) {
         )
       
     } else if(input$view_mode == "bivariate") {
-      bivariate_data <- get_bivariate_data()
-      if(is.null(bivariate_data)) return()
+  bivariate_data <- get_bivariate_data()
+  if(is.null(bivariate_data)) return()
+  
+  mapped_data <- shapes %>%
+    left_join(bivariate_data, by = c("LAD22CD" = "Area_Code"))
+  
+  # Add clear classification before coloring
+  mapped_data$fill_color <- NA
+  for(i in 1:nrow(mapped_data)) {
+    if(!is.na(mapped_data$Mortality[i]) && !is.na(mapped_data$Fuel_Poverty[i])) {
+      is_high_mort <- mapped_data$Mortality[i] > global_medians$mortality_median
+      is_high_fp <- mapped_data$Fuel_Poverty[i] > global_medians$fuel_poverty_median
       
-      mapped_data <- shapes %>%
-        left_join(bivariate_data, by = c("LAD22CD" = "Area_Code"))
+      mort_class <- ifelse(is_high_mort, 2, 1)  # Changed from 1,2 to 2,1
+      fp_class <- ifelse(is_high_fp, 2, 1)
       
-      mapped_data$fill_color <- NA
-      for(i in 1:nrow(mapped_data)) {
-        if(!is.na(mapped_data$Mortality_Class[i]) && !is.na(mapped_data$Fuel_Poverty_Class[i])) {
-          mapped_data$fill_color[i] <- bivariate_colour_matrix()[
-            as.numeric(mapped_data$Fuel_Poverty_Class[i]),
-            as.numeric(mapped_data$Mortality_Class[i])
-          ]
-        }
-      }
+      mapped_data$fill_color[i] <- bivariate_colour_matrix()[fp_class, mort_class]
+    }
+  }
+  ####cherkin colores lololol
+  print("MAP COLOR ASSIGNMENTS:")
+  if(!is.na(mapped_data$Mortality[i]) && !is.na(mapped_data$Fuel_Poverty[i])) {
+    is_high_mort <- mapped_data$Mortality[i] > global_medians$mortality_median
+    is_high_fp <- mapped_data$Fuel_Poverty[i] > global_medians$fuel_poverty_median
+    
+    mort_class <- ifelse(is_high_mort, 2, 1)
+    fp_class <- ifelse(is_high_fp, 2, 1)
+    
+    color <- bivariate_colour_matrix()[fp_class, mort_class]
+    print(paste("Mortality:", ifelse(is_high_mort, "HIGH", "LOW"),
+                "FP:", ifelse(is_high_fp, "HIGH", "LOW"),
+                "Color:", color))
+  }
       
       labels <- lapply(seq_len(nrow(mapped_data)), function(i) {
         if(is.na(mapped_data$Mortality[i]) || is.na(mapped_data$Fuel_Poverty[i])) {
@@ -518,10 +574,12 @@ server <- function(input, output, session) {
             "No data available"
           )))
         } else {
+          mort_status <- ifelse(mapped_data$Mortality[i] > global_medians$mortality_median, "High", "Low")
+          fp_status <- ifelse(mapped_data$Fuel_Poverty[i] > global_medians$fuel_poverty_median, "High", "Low")
           return(HTML(paste0(
             "<b>", mapped_data$LAD22NM[i], "</b><br/>",
-            "Winter Mortality Index: ", round(mapped_data$Mortality[i], 1), "<br/>",
-            "Fuel Poverty: ", round(mapped_data$Fuel_Poverty[i], 1), "%"
+            "Winter Mortality Index: ", round(mapped_data$Mortality[i], 1), " (", mort_status, ")<br/>",
+            "Fuel Poverty: ", round(mapped_data$Fuel_Poverty[i], 1), "% (", fp_status, ")"
           )))
         }
       })
