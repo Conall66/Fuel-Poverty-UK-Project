@@ -529,6 +529,7 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
       
       leafletProxy("map") %>%
         clearShapes() %>%
+        clearMarkers() %>%
         clearControls() %>%
         addPolygons(
           data = mapped_data,
@@ -606,6 +607,7 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
     # Update map with verified data
     leafletProxy("map") %>%
       clearShapes() %>%
+      clearMarkers() %>%
       clearControls() %>%
       addPolygons(
         data = mapped_data,
