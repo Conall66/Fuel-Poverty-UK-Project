@@ -91,6 +91,9 @@ ui <- fluidPage(
              # Add rankings panel here
              wellPanel(
                h4("Most Affected Regions (2012-2020)"),
+                  style = "font-size: 16px; margin-bottom: 15px; font-weight: 600;"),
+               div(
+                  style = "background-color: white; border-radius: 8px; padding: 12px;",
                tableOutput("fixed_rankings")
              )
            ),
@@ -177,12 +180,27 @@ server <- function(input, output, session) {
     top_regions <- readRDS("top_regions.rds")
     data.frame(
       Region = top_regions$Area_Name,
-      `High-Risk Years` = top_regions$High_High_Count,
+      `High Risk Years` = top_regions$High_High_Count,
       `Avg WMI` = round(top_regions$Avg_Mortality, 1),
-      `Avg FP%` = paste0(round(top_regions$Avg_Fuel_Poverty, 1), "%"),
-      `Risk Score` = round(top_regions$Risk_Score, 2)
+      `Avg FP%` = paste0(round(top_regions$Avg_Fuel_Poverty, 1), "%")
     )
-  }, align = 'l', width = "100%")
+  }, 
+  align = 'lccc',  # Left align region, center align numbers
+  width = "100%",
+  striped = TRUE,
+  hover = TRUE,
+  spacing = "m",
+  class = "table table-hover")
+  
+  # UI remains the same
+  wellPanel(
+    h4("Most Affected Regions (2012-2020)", 
+       style = "font-size: 16px; margin-bottom: 15px; font-weight: 600;"),
+    div(
+      style = "background-color: white; border-radius: 8px; padding: 12px;",
+      tableOutput("fixed_rankings")
+    )
+  )
   
   #OUTPUT TEXT EXPLANATION
   output$view_explanation <- renderText({
