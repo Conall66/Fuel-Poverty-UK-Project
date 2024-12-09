@@ -15,7 +15,7 @@ library(ellipse)
 # Input Variables ---------------------------------------------------------
 
 start_yr <- 2012
-final_yr <- 2021
+final_yr <- 2020
 
 
 # Data --------------------------------------------------------------------
@@ -101,6 +101,12 @@ for(i in 1:numfiles){
   abline(v = meand - stdd, col = "grey", lwd = 2, lty = 2)
   abline(v = meand + stdd, col = "grey", lwd = 2, lty = 2)
   
+  legend("topright",  # Position of the legend
+         legend = c("Density", "Median", "Mean", "Mean ± 1 SD"),  # Labels
+         col = c("lightBlue", "red", "blue", "grey"),  # Line colors
+         lty = c(1, 2, 1, 2),  # Line types (solid, dashed, etc.)
+         lwd = c(2, 2, 2, 2))  # Line widths
+  
   dev.off()
   
   # add proportions to initialised dataframe
@@ -139,6 +145,12 @@ abline(v = mean(proportion_data$proportion) - sd(proportion_data$proportion),
 abline(v = mean(proportion_data$proportion) + sd(proportion_data$proportion), 
        col = "grey", lwd = 2, lty = 2)
 
+legend("topright",  # Position of the legend
+       legend = c("Density", "Median", "Mean", "Mean ± 1 SD"),  # Labels
+       col = c("lightBlue", "red", "blue", "grey"),  # Line colors
+       lty = c(1, 2, 1, 2),  # Line types (solid, dashed, etc.)
+       lwd = c(2, 2, 2, 2))  # Line widths
+
 dev.off()
 
 
@@ -160,17 +172,17 @@ if(!dir.exists("Distribution WMI Data")){
 }
 
 # Create intialised arrays to store values
-means_wmi <- numeric(length(WMI_data)*length(Years))
-std_wmi <- numeric(length(WMI_data)*length(Years))
-med_wmi <- numeric(length(WMI_data)*length(Years))
-iqr_wmi <- numeric(length(WMI_data)*length(Years))
+means_wmi <- numeric(length(Years))
+std_wmi <- numeric(length(Years))
+med_wmi <- numeric(length(Years))
+iqr_wmi <- numeric(length(Years))
 
 # numfiles <- length(Fuel_Poverty_files)
 proportion_data_WMI <- data.frame(Year = numeric(0), WMI = numeric(0))
 
 upd_idx <- 66 # On this column that 2012 data begins
 
-for(i in 1:(length(Years)-1)){
+for(i in 1:(length(Years))){
   
     col_select <- as.numeric(unlist(WMI_data[upd_idx]))
     
@@ -211,6 +223,12 @@ for(i in 1:(length(Years)-1)){
     abline(v = meand, col = "blue", lwd = 2, lty = 2)
     abline(v = meand - stdd, col = "grey", lwd = 2, lty = 2)
     abline(v = meand + stdd, col = "grey", lwd = 2, lty = 2)
+    
+    legend("topright",  # Position of the legend
+           legend = c("Density", "Median", "Mean", "Mean ± 1 SD"),  # Labels
+           col = c("lightBlue", "red", "blue", "grey"),  # Line colors
+           lty = c(1, 2, 1, 2),  # Line types (solid, dashed, etc.)
+           lwd = c(2, 2, 2, 2))  # Line widths
     
     dev.off()
     
@@ -254,6 +272,12 @@ abline(v = mean(proportion_data_WMI$WMI) - sd(proportion_data_WMI$WMI),
        col = "grey", lwd = 2, lty = 2)
 abline(v = mean(proportion_data_WMI$WMI) + sd(proportion_data_WMI$WMI), 
        col = "grey", lwd = 2, lty = 2)
+
+legend("topright",  # Position of the legend
+       legend = c("Density", "Median", "Mean", "Mean ± 1 SD"),  # Labels
+       col = c("lightBlue", "red", "blue", "grey"),  # Line colors
+       lty = c(1, 2, 1, 2),  # Line types (solid, dashed, etc.)
+       lwd = c(2, 2, 2, 2))  # Line widths
 
 dev.off()
 
@@ -313,7 +337,7 @@ for (item in (1:(length(Years)-1))){
       label = paste("Spearman's rho =", round(spearman_corr, 2)),
       color = "darkred"
     ) +
-    theme_minimal()
+    theme_classic()
     
   file_name <- paste0("Scatter Plot ", year)
   file_loc <- paste0("Relationship WMI Fuel Pov/", year, ".png")
@@ -322,3 +346,16 @@ for (item in (1:(length(Years)-1))){
   upd_idx <- upd_idx + 3
   
 }
+
+# UK Temperature and Correlation ------------------------------------------
+
+# Categorised by year
+Temp_correlation <- read.csv("UK_Temp.csv")
+
+Temp_FP_WMI <- data.frame(Fuel_Poverty = means_fp[1:(length(means_fp)-1)], 
+                          WMI = means_wmi, 
+                          Temp = Temp_correlation$Min_Temp[1:(length(Temp_correlation$Min_Temp)-1)])
+
+
+
+

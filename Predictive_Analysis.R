@@ -7,4 +7,10 @@
 
 # Extract Datasets --------------------------------------------------------
 
-Sub_reg_data <- source()
+Pred_sub_reg <- function(year){
+  
+  file_name <- paste0("Sub_Reg_Data_", year, "_LILEE.csv")
+  file_path <- paste0("Final Data Cleaned/", file_name)
+  file <- read.csv(file_path)
+  
+}
