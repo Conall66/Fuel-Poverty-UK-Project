@@ -129,6 +129,27 @@ ui <- fluidPage(
                h4(textOutput("selected_region_title")),
                plotOutput("temporal_bivariate", height = "150px")
              )
+           ),
+           absolutePanel(
+             top = 10, 
+             right = 50, 
+             # width = 150,
+             style = "background-color: rgba(255,255,255,0.8); padding: 10px; 
+             border-radius: 5px;",
+             
+             # h3("Minimum Temperature", style = "font-size: 10px; display: flex;
+             #    align-items: center; justify-content: center; 
+             #    text-align: center; word-wrap: break-word; 
+             #    height: 100%; width: 100%;"),
+             
+             div(
+               style = "display: flex; align-items: center; 
+               justify-content: center; text-align: center; 
+               flex-wrap: wrap; height: 100%; width: 100%;",
+               tags$i(src = "icons/Thermometer.png", 
+                      style = "margin-right: 10px; font-size: 10px;"),
+               textOutput("min_temp_display")
+             )
            )
     )
   )
@@ -159,6 +180,15 @@ server <- function(input, output, session) {
   fuel_poverty_data <- reactive({
     file_path <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", input$year)
     safe_read_csv(file_path)
+  })
+  
+  ### UK Temp DATA
+  
+  UK_temp <- safe_read_csv('UK_Temp.csv')
+  
+  UK_temp_yr <- reactive({
+    UK_temp %>% 
+      filter(Year == input$year)
   })
   
   ### MORTALITY DATA LOADING
@@ -192,6 +222,12 @@ server <- function(input, output, session) {
       error = function(e) NULL
     )
   })
+  
+  ### Temp year
+  output$min_temp_display <- renderText({
+    paste(UK_temp_yr()$Min_Temp, "°C")
+  })
+  
   ### leaderboard
   output$fixed_rankings <- renderTable({
     top_regions <- readRDS("top_regions.rds")
@@ -431,7 +467,16 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
-      setView(-2, 54, 6)
+      setView(-2, 54, 6) %>%
+      addMarkers(
+        lng = 0, 
+        lat = 0, 
+        icon = makeIcon(
+          iconUrl = "icons/Thermometer.png",
+          iconWidth = 30, iconHeight = 30,
+          iconAnchorX = 15, iconAnchorY = 15
+        )
+      )
   })
   
   
@@ -726,6 +771,7 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
       "Select a view mode to see statistics"
     }
   })
+  
 }
 
 shinyApp(ui = ui, server = server)

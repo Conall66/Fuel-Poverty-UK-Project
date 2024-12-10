@@ -98,12 +98,3 @@ for(year in mortality_data_years){
   data_step <- data_step + 3 # Each WMI is 3 rows apart
   year_step <- year_step + 1 # Iterate one further in array of years
 }
-
-# R Shiny Presentation ----------------------------------------------------
-
-# ui <- fluidPage(
-#   "Hello world!"
-# )
-# server <- function(input, output, session) {
-# }
-# shinyApp(ui, server)

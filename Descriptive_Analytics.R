@@ -355,7 +355,8 @@ Temp_correlation <- read.csv("UK_Temp.csv")
 Temp_FP_WMI <- data.frame(Fuel_Poverty = means_fp[1:(length(means_fp)-1)], 
                           WMI = means_wmi, 
                           Temp = Temp_correlation$Min_Temp[1:(length(Temp_correlation$Min_Temp)-1)])
-
-
+FP_WMI_cor <- cor(Temp_FP_WMI$Fuel_Poverty, Temp_FP_WMI$WMI, method = "spearman")
+FP_Temp_cor <- cor(Temp_FP_WMI$Fuel_Poverty, Temp_FP_WMI$Temp, method = "spearman")
+WMI_Temp_cor <- cor(Temp_FP_WMI$WMI, Temp_FP_WMI$Temp, method = "spearman")
 
 
