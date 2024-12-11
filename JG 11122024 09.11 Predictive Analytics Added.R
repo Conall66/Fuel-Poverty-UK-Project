@@ -1,3 +1,8 @@
+
+
+# Libraries ---------------------------------------------------------------
+
+
 library(shiny)
 library(leaflet)
 library(dplyr)
@@ -5,8 +10,18 @@ library(sf)
 library(RColorBrewer)
 library(plotly)
 library(ggplot2)
+library(shinyjs)
 
-# Define icons
+
+# Functions ---------------------------------------------------------------
+
+
+
+# Icons -------------------------------------------------------------------
+
+# These icons are used to communicate the change in fuel poverty/winter
+# mortality
+
 icons <- list(
   small_up = makeIcon(
     iconUrl = "icons/small-up-arrow.png",
@@ -50,12 +65,36 @@ bivariate_colour_matrix <- function() {
   )
 }
 
+# Define the path to your images folder
+image_folder <- "icons"  # Replace with your folder's path
+
+# resource path to serve files from this folder
+addResourcePath("icons", image_folder)
+source("PredictiveAnalytics_JG_Update.R")
+
+# Fluid Page --------------------------------------------------------------
+
 
 ui <- fluidPage(
   titlePanel("England Fuel Poverty & Winter Mortality Dashboard"),
   
+  tags$head(
+    tags$style(HTML("
+      .thermometer-icon {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      .bold-temp {
+        font-weight: bold;
+        font-size: 1.5em;
+      }
+    "))
+  ),
+  
   fluidRow(
-    column(3,
+    column(5,
            wellPanel(
              sliderInput("year", "Select Year:", 2012, 2021, 2012, sep = ""),
              radioButtons("view_mode", "Select View:",
@@ -82,11 +121,42 @@ ui <- fluidPage(
              verbatimTextOutput("summary_stats")
            ),
            
+           # Add prediction panel here - only shows for fuel poverty and mortality modes
+           conditionalPanel(
+             condition = "input.view_mode != 'bivariate'",
+             wellPanel(
+               h4("Predictive Analysis"),
+               textOutput("selected_region_name"),
+               selectInput("predict_type", "Predict:",
+                           choices = c("Winter Mortality", "Fuel Poverty"),
+                           selected = "Winter Mortality"),
+               conditionalPanel(
+                 condition = "input.predict_type == 'Fuel Poverty'",
+                 selectInput("predict_metric", "Metric:",
+                             choices = c("households", "proportion"),
+                             selected = "proportion")
+               ),
+               actionButton("run_prediction", "Run Prediction", 
+                            class = "btn-primary"),
+               tags$div(style = "margin-top: 15px"),
+               plotOutput("prediction_plot", height = "300px"),
+               verbatimTextOutput("prediction_summary")
+             )
+           ),
+           
            # Bivariate legend in left column
            conditionalPanel(
              condition = "input.view_mode == 'bivariate'",
              wellPanel(
                plotOutput("bivariate_legend", height = "150px", width = "150px")
+             ),
+             wellPanel(
+               h4("Most Affected Regions (2012-2020)",
+                  style = "overflow-x: auto; font-size: 10px; margin-bottom: 10px; font-weight: 600;"),
+               div(
+                 style = "background-color: white; border-radius: 8px; padding: 12px;",
+                 tableOutput("fixed_rankings")
+               )
              )
            ),
            
@@ -99,7 +169,7 @@ ui <- fluidPage(
            )
     ),
     
-    column(9,
+    column(7,
            leafletOutput("map", height = "700px"),
            # Temporal visualization below map
            conditionalPanel(
@@ -108,28 +178,65 @@ ui <- fluidPage(
                h4(textOutput("selected_region_title")),
                plotOutput("temporal_bivariate", height = "150px")
              )
+           ),
+           absolutePanel(
+             top = 10, 
+             right = 25, 
+             # width = 150,
+             style = "background-color: rgba(255,255,255,0.8); padding: 10px; 
+             border-radius: 5px;",
+             
+             h3("Minimum Temperature", style = "font-size: 15px; display: flex;
+                margin-top: 0; word-wrap: break-word;"),
+             
+             div(
+               style = "display: flex; align-items: center; justify-content: center; 
+             text-align: center; flex-wrap: wrap; margin-top: 0px;",
+               img(src = "icons/Thermometer.png", 
+                   class = "thermometer-icon",
+                   style = "margin-right: 10px;"),
+               textOutput("min_temp_display") %>%
+                 tagAppendAttributes(class = "bold-temp")
+             )
            )
     )
   )
 )
 
+
+# Functionality -----------------------------------------------------------
+
+
 server <- function(input, output, session) {
+  
+  shinyjs::useShinyjs()
+  
+  # Data loading reactives
+  global_medians <- readRDS("global_medians.rds")
   selected_region <- reactiveVal(NULL)
+  selected_bivariate_region <- reactiveVal(NULL)
   
-  ###  DATA LOADING FUNCTIONS
+  #initialise reactive values
+  prediction_region <- reactiveVal(NULL)
+  prediction_results <- reactiveVal(NULL)
   
+  # Data loading functions
   safe_read_csv <- function(file_path, ...) {
     tryCatch(read.csv(file_path, ...), error = function(e) NULL)
   }
   
-  ### FUEL POVERTY DATA LOADING
-  
+  # Load datasets
   fuel_poverty_data <- reactive({
     file_path <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", input$year)
     safe_read_csv(file_path)
   })
   
-  ### MORTALITY DATA LOADING
+  UK_temp <- safe_read_csv('UK_Temp.csv')
+  
+  UK_temp_yr <- reactive({
+    UK_temp %>% 
+      filter(Year == input$year)
+  })
   
   full_mortality_data <- reactive({
     safe_read_csv("WMI_RelevantYears.csv", check.names = FALSE)
@@ -161,16 +268,48 @@ server <- function(input, output, session) {
     )
   })
   
-  #OUTPUT TEXT EXPLANATION
-  output$view_explanation <- renderText({
-    switch(input$view_mode,
-           "fuel" = "Fuel Poverty describes households that cannot afford to keep their home adequately heated at a reasonable cost, factoring in their income and home energy-efficiency",
-           "mortality" = "The measure of excess deaths occurring in winter months compared to non-winter months. Winter Mortality Index (WMI) indicator describes the ratio of excess deaths in the winter months compared with the average number of deaths in the summer months",
-           "bivariate" = "Bivariate graph shows the relationship between fuel poverty rates and winter mortality across regions"
-    )
+  # Update prediction type based on view mode
+  observe({
+    if(input$view_mode == "mortality") {
+      updateSelectInput(session, "predict_type",
+                        selected = "Winter Mortality")
+    } else if(input$view_mode == "fuel") {
+      updateSelectInput(session, "predict_type",
+                        selected = "Fuel Poverty")
+    }
   })
   
-  ### BIVARIATE DATA LOADING
+  # Prediction functionality
+  prediction_region <- reactiveVal(NULL)
+  prediction_results <- reactiveVal(NULL)
+  
+  # Clear prediction results when switching modes
+  observeEvent(input$view_mode, {
+    prediction_results(NULL)
+  })
+  
+  # Run prediction when button is clicked
+  observeEvent(input$run_prediction, {
+    req(prediction_region())
+    
+    area_code <- prediction_region()
+    state <- input$predict_type
+    # For Winter Mortality, we'll pass a default metric value
+    hop <- if(state == "Fuel Poverty") input$predict_metric else "proportion"
+    years <- 2012:2021
+    
+    tryCatch({
+      results <- Predict(area_code, hop, years, state)
+      prediction_results(results)
+    }, error = function(e) {
+      showNotification(
+        paste("Error running prediction:", e$message),
+        type = "error"
+      )
+    })
+  })
+  
+  # Bivariate data preparation
   get_bivariate_data <- reactive({
     year_selected <- input$year
     mortality_df <- full_mortality_data()
@@ -186,31 +325,18 @@ server <- function(input, output, session) {
       Area_Code = mortality_df$`Area code`,
       Area_Name = mortality_df$`Area name`,
       Mortality = as.numeric(mortality_df[[mortality_col]]),
-      Fuel_Poverty = fp_data$proportion
+      Fuel_Poverty = fp_data$proportion[match(mortality_df$`Area code`, fp_data$Area.Codes)]
     )
     
     combined_data <- combined_data[complete.cases(combined_data), ]
     
-    combined_data$Mortality_Class <- cut(combined_data$Mortality, 
-                                         breaks = quantile(combined_data$Mortality, 
-                                                           probs = c(0, 1/2, 1), 
-                                                           na.rm = TRUE),
-                                         labels = 2:1,  # Changed from 1:3 to 3:1
-                                         include.lowest = TRUE)
-    
-    combined_data$Fuel_Poverty_Class <- cut(combined_data$Fuel_Poverty, 
-                                            breaks = quantile(combined_data$Fuel_Poverty, 
-                                                              probs = c(0, 1/2, 1), 
-                                                              na.rm = TRUE),
-                                            labels = 2:1,  # Changed from 1:3 to 3:1
-                                            include.lowest = TRUE)
+    combined_data$Mortality_Class <- ifelse(combined_data$Mortality > global_medians$mortality_median, "HIGH", "LOW")
+    combined_data$Fuel_Poverty_Class <- ifelse(combined_data$Fuel_Poverty > global_medians$fuel_poverty_median, "HIGH", "LOW")
     
     return(combined_data)
   })
   
-  selected_bivariate_region <- reactiveVal(NULL)
-  
-  # Function to get historical bivariate data for a region
+  # Historical bivariate data
   get_historical_bivariate <- reactive({
     req(selected_bivariate_region())
     region_id <- selected_bivariate_region()
@@ -225,7 +351,6 @@ server <- function(input, output, session) {
     mortality_df <- full_mortality_data()
     
     for(year in years) {
-      # Get fuel poverty data for year
       fp_file <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", year)
       fp_data <- safe_read_csv(fp_file)
       
@@ -233,11 +358,11 @@ server <- function(input, output, session) {
         mortality_col <- paste0("Winter mortality index ", year)
         
         if(mortality_col %in% names(mortality_df)) {
-          historical_data$Mortality[historical_data$Year == year] <- 
-            mortality_df[[mortality_col]][mortality_df$`Area code` == region_id]
+          mort_val <- mortality_df[[mortality_col]][mortality_df$`Area code` == region_id]
+          fp_val <- fp_data$proportion[fp_data$Area.Codes == region_id]
           
-          historical_data$Fuel_Poverty[historical_data$Year == year] <- 
-            fp_data$proportion[fp_data$Area.Codes == region_id]
+          historical_data$Mortality[historical_data$Year == year] <- mort_val
+          historical_data$Fuel_Poverty[historical_data$Year == year] <- fp_val
         }
       }
     }
@@ -245,7 +370,67 @@ server <- function(input, output, session) {
     return(historical_data[complete.cases(historical_data), ])
   })
   
-  # Improved bivariate legend using ggplot2
+  # Map click handlers
+  observeEvent(input$map_shape_click, {
+    if(input$view_mode == "mortality") {
+      selected_region(input$map_shape_click$id)
+    }
+    if(input$view_mode == "bivariate") {
+      selected_bivariate_region(input$map_shape_click$id)
+    }
+    prediction_region(input$map_shape_click$id)
+  })
+  
+  # Outputs
+  output$min_temp_display <- renderText({
+    paste(UK_temp_yr()$Min_Temp, "°C")
+  })
+  
+  ### Preditive Analytics server side
+  
+  output$selected_region_name <- renderText({
+    req(input$view_mode)
+    if (is.null(prediction_region())) {
+      "No region selected - click a region on the map"
+    } else {
+      shape_data <- shape_data()
+      req(shape_data)
+      region_name <- shape_data$LAD22NM[shape_data$LAD22CD == prediction_region()]
+      paste("Selected Region:", region_name)
+    }
+  })
+  
+  output$region_select_message <- renderText({
+    req(input$view_mode)
+    if (is.null(prediction_region())) {
+      "Please select a region on the map to run predictions"
+    } else {
+      ""
+    }
+  })
+  
+  # Observe block for the button state
+  observe({
+    req(input$view_mode)
+    if (is.null(prediction_region())) {
+      shinyjs::disable("run_prediction")
+    } else {
+      shinyjs::enable("run_prediction")
+    }
+  })
+  
+  output$fixed_rankings <- renderTable({
+    top_regions <- readRDS("top_regions.rds")
+    data.frame(
+      Region = top_regions$Area_Name,
+      `High Risk Years` = top_regions$High_High_Count,
+      `Avg WMI` = round(top_regions$Avg_Mortality, 1),
+      `Avg FP%` = paste0(round(top_regions$Avg_Fuel_Poverty, 1), "%")
+    )
+  }, align = 'lccc', width = "auto", striped = TRUE, hover = TRUE, spacing = "m",
+  class = "table table-hover")
+  
+  ##bivariate legend display
   output$bivariate_legend <- renderPlot({
     # Create a data frame for the legend
     legend_data <- expand.grid(
@@ -276,83 +461,61 @@ server <- function(input, output, session) {
       )
   })
   
-  output$warning_message <- renderUI({
-    year_selected <- input$year
-    
-    if(year_selected == 2021) {
-      div(
-        style = "color: red; background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin-top: 10px;",
-        icon("exclamation-triangle"),
-        "No winter mortality data available for 2021"
-      )
-    } else if(is.null(get_bivariate_data())) {
-      div(
-        style = "color: red; background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin-top: 10px;",
-        icon("exclamation-triangle"),
-        "No data available for", year_selected
-      )
-    }
+  output$view_explanation <- renderText({
+    switch(input$view_mode,
+           "fuel" = "Fuel Poverty describes households that cannot afford to keep their home adequately heated at a reasonable cost, factoring in their income and home energy-efficiency",
+           "mortality" = "The measure of excess deaths occurring in winter months compared to non-winter months. Winter Mortality Index (WMI) indicator describes the ratio of excess deaths in the winter months compared with the average number of deaths in the summer months",
+           "bivariate" = "Bivariate graph shows the relationship between fuel poverty rates and winter mortality across regions"
+    )
   })
   
-  # Output for region title
+  output$prediction_plot <- renderPlot({
+    req(prediction_results())
+    results <- prediction_results()
+    results$p
+  })
+  
+  output$prediction_summary <- renderText({
+    req(prediction_results())
+    results <- prediction_results()
+    
+    summary <- results$model_summary
+    paste(
+      "Model Statistics:\n",
+      "R-squared:", round(summary$r.squared, 4), "\n",
+      "Adjusted R-squared:", round(summary$adj.r.squared, 4), "\n",
+      "F-statistic:", round(summary$fstatistic[1], 2), 
+      "on", summary$fstatistic[2], "and", summary$fstatistic[3], "DF\n",
+      "p-value:", format.pval(summary$coefficients[2,4])
+    )
+  })
+  
   output$selected_region_title <- renderText({
     req(selected_bivariate_region())
     region_name <- shape_data()$LAD22NM[shape_data()$LAD22CD == selected_bivariate_region()]
     paste("Historical Bivariate Pattern for", region_name)
   })
   
-  # Output for temporal small multiples
   output$temporal_bivariate <- renderPlot({
     req(selected_bivariate_region())
     hist_data <- get_historical_bivariate()
     
-    # Get ALL years' data for classification
-    all_data <- data.frame(Mortality = numeric(), Fuel_Poverty = numeric())
-    
-    for(year in 2012:2020) {
-      mortality_df <- full_mortality_data()
-      mortality_col <- paste0("Winter mortality index ", year)
+    get_color <- function(mortality, fuel_poverty) {
+      is_high_mort <- mortality > global_medians$mortality_median
+      is_high_fp <- fuel_poverty > global_medians$fuel_poverty_median
       
-      fp_file <- sprintf("Final Data Cleaned/Sub_Reg_Data_%d_LILEE.csv", year)
-      fp_data <- safe_read_csv(fp_file)
-      
-      if(!is.null(fp_data) && mortality_col %in% names(mortality_df)) {
-        all_data <- rbind(all_data, data.frame(
-          Mortality = as.numeric(mortality_df[[mortality_col]]),
-          Fuel_Poverty = fp_data$proportion
-        ))
-      }
+      if(is_high_mort && is_high_fp) return("#30585C")
+      if(is_high_mort && !is_high_fp) return("#689E73")
+      if(!is_high_mort && is_high_fp) return("#6277A5")
+      return("#D3D3D3")
     }
     
-    # Calculate breaks using ALL years' data
-    mort_breaks <- quantile(all_data$Mortality, probs = c(0, 0.5, 1), na.rm = TRUE)
-    fp_breaks <- quantile(all_data$Fuel_Poverty, probs = c(0, 0.5, 1), na.rm = TRUE)
+    hist_data$fill_color <- mapply(
+      get_color,
+      hist_data$Mortality,
+      hist_data$Fuel_Poverty
+    )
     
-    # Apply classifications using consistent breaks
-    hist_data <- hist_data %>%
-      mutate(
-        Mortality_Class = cut(Mortality, 
-                              breaks = mort_breaks,
-                              labels = 2:1,
-                              include.lowest = TRUE),
-        Fuel_Poverty_Class = cut(Fuel_Poverty, 
-                                 breaks = fp_breaks,
-                                 labels = 2:1,
-                                 include.lowest = TRUE),
-        fill_color = NA_character_
-      )
-    
-    # Assign colors using the same logic as the main map
-    for(i in 1:nrow(hist_data)) {
-      if(!is.na(hist_data$Mortality_Class[i]) && !is.na(hist_data$Fuel_Poverty_Class[i])) {
-        hist_data$fill_color[i] <- bivariate_colour_matrix()[
-          as.numeric(hist_data$Fuel_Poverty_Class[i]),
-          as.numeric(hist_data$Mortality_Class[i])
-        ]
-      }
-    }
-    
-    # Create the plot using the pre-calculated fill colors
     ggplot(hist_data, aes(x = 1, y = 1)) +
       facet_wrap(~Year, nrow = 1) +
       geom_tile(aes(fill = fill_color)) +
@@ -368,13 +531,17 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
-      setView(-2, 54, 6)
+      setView(-2, 54, 6) %>%
+      addMarkers(
+        lng = 0, 
+        lat = 0,
+      )
   })
-  
   
   
   ### OBSERVE BLOCK WORKING
   
+  # Updates values with live changes to inputs
   
   observe({
     req(shape_data())
@@ -489,6 +656,7 @@ server <- function(input, output, session) {
       
       leafletProxy("map") %>%
         clearShapes() %>%
+        clearMarkers() %>%
         clearControls() %>%
         addPolygons(
           data = mapped_data,
@@ -520,36 +688,53 @@ server <- function(input, output, session) {
       bivariate_data <- get_bivariate_data()
       if(is.null(bivariate_data)) return()
       
+      # Join with shape data using explicit columns
       mapped_data <- shapes %>%
         left_join(bivariate_data, by = c("LAD22CD" = "Area_Code"))
       
-      mapped_data$fill_color <- NA
+      # Print debug information for specific areas
+      print("East Lindsey Check:")
+      print(mapped_data %>% 
+              filter(LAD22NM == "East Lindsey") %>% 
+              select(LAD22NM, Mortality, Fuel_Poverty, Mortality_Class, Fuel_Poverty_Class))
+      
+      mapped_data$fill_color <- NA_character_
+      
       for(i in 1:nrow(mapped_data)) {
-        if(!is.na(mapped_data$Mortality_Class[i]) && !is.na(mapped_data$Fuel_Poverty_Class[i])) {
-          mapped_data$fill_color[i] <- bivariate_colour_matrix()[
-            as.numeric(mapped_data$Fuel_Poverty_Class[i]),
-            as.numeric(mapped_data$Mortality_Class[i])
-          ]
+        if(!is.na(mapped_data$Mortality[i]) && !is.na(mapped_data$Fuel_Poverty[i])) {
+          mort_class <- mapped_data$Mortality_Class[i]
+          fp_class <- mapped_data$Fuel_Poverty_Class[i]
+          
+          mapped_data$fill_color[i] <- case_when(
+            mort_class == "HIGH" && fp_class == "HIGH" ~ "#30585C",
+            mort_class == "HIGH" && fp_class == "LOW" ~ "#689E73",
+            mort_class == "LOW" && fp_class == "HIGH" ~ "#6277A5",
+            TRUE ~ "#D3D3D3"
+          )
         }
       }
       
       labels <- lapply(seq_len(nrow(mapped_data)), function(i) {
         if(is.na(mapped_data$Mortality[i]) || is.na(mapped_data$Fuel_Poverty[i])) {
-          return(HTML(paste0(
+          HTML(paste0(
             "<b>", mapped_data$LAD22NM[i], "</b><br/>",
             "No data available"
-          )))
+          ))
         } else {
-          return(HTML(paste0(
+          HTML(paste0(
             "<b>", mapped_data$LAD22NM[i], "</b><br/>",
-            "Winter Mortality Index: ", round(mapped_data$Mortality[i], 1), "<br/>",
-            "Fuel Poverty: ", round(mapped_data$Fuel_Poverty[i], 1), "%"
-          )))
+            "Winter Mortality Index: ", round(mapped_data$Mortality[i], 1), 
+            " (", mapped_data$Mortality_Class[i], ")<br/>",
+            "Fuel Poverty: ", round(mapped_data$Fuel_Poverty[i], 1), "%",
+            " (", mapped_data$Fuel_Poverty_Class[i], ")"
+          ))
         }
       })
       
+      # Update map with verified data
       leafletProxy("map") %>%
         clearShapes() %>%
+        clearMarkers() %>%
         clearControls() %>%
         addPolygons(
           data = mapped_data,
@@ -645,6 +830,7 @@ server <- function(input, output, session) {
       "Select a view mode to see statistics"
     }
   })
+  
 }
 
 shinyApp(ui = ui, server = server)
