@@ -12,6 +12,10 @@ library(plotly)
 library(ggplot2)
 
 
+# Functions ---------------------------------------------------------------
+
+
+
 # Icons -------------------------------------------------------------------
 
 # These icons are used to communicate the change in fuel poverty/winter
@@ -60,12 +64,32 @@ bivariate_colour_matrix <- function() {
   )
 }
 
+# Define the path to your images folder
+image_folder <- "icons"  # Replace with your folder's path
+
+# Add a custom resource path to serve files from this folder
+addResourcePath("icons", image_folder)
 
 # Fluid Page --------------------------------------------------------------
 
 
 ui <- fluidPage(
   titlePanel("England Fuel Poverty & Winter Mortality Dashboard"),
+  
+  tags$head(
+    tags$style(HTML("
+      .thermometer-icon {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      .bold-temp {
+        font-weight: bold;
+        font-size: 1.5em;
+      }
+    "))
+  ),
   
   fluidRow(
     column(5,
@@ -132,23 +156,22 @@ ui <- fluidPage(
            ),
            absolutePanel(
              top = 10, 
-             right = 50, 
+             right = 25, 
              # width = 150,
              style = "background-color: rgba(255,255,255,0.8); padding: 10px; 
              border-radius: 5px;",
              
-             # h3("Minimum Temperature", style = "font-size: 10px; display: flex;
-             #    align-items: center; justify-content: center; 
-             #    text-align: center; word-wrap: break-word; 
-             #    height: 100%; width: 100%;"),
+             h3("Minimum Temperature", style = "font-size: 15px; display: flex;
+                margin-top: 0; word-wrap: break-word;"),
              
              div(
-               style = "display: flex; align-items: center; 
-               justify-content: center; text-align: center; 
-               flex-wrap: wrap; height: 100%; width: 100%;",
-               tags$i(src = "icons/Thermometer.png", 
-                      style = "margin-right: 10px; font-size: 10px;"),
-               textOutput("min_temp_display")
+               style = "display: flex; align-items: center; justify-content: center; 
+             text-align: center; flex-wrap: wrap; margin-top: 0px;",
+               img(src = "icons/Thermometer.png", 
+                   class = "thermometer-icon",
+                      style = "margin-right: 10px;"),
+               textOutput("min_temp_display") %>%
+                 tagAppendAttributes(class = "bold-temp")
              )
            )
     )
@@ -470,12 +493,7 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
       setView(-2, 54, 6) %>%
       addMarkers(
         lng = 0, 
-        lat = 0, 
-        icon = makeIcon(
-          iconUrl = "icons/Thermometer.png",
-          iconWidth = 30, iconHeight = 30,
-          iconAnchorX = 15, iconAnchorY = 15
-        )
+        lat = 0,
       )
   })
   
@@ -483,6 +501,7 @@ get_bivariate_color <- function(is_high_mort, is_high_fp) {
   
   ### OBSERVE BLOCK WORKING
   
+  # Updates values with live changes to inputs
   
   observe({
     req(shape_data())
