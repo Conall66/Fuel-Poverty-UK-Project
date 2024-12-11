@@ -8,6 +8,7 @@
 # Libraries ---------------------------------------------------------------
 
 library(ggplot2)
+library(dplyr)
 
 # Test Inputs -------------------------------------------------------------
 
@@ -21,7 +22,7 @@ state <- "Winter Mortality"
 ## FP Data
 
 # Prediction function with confidence intervals
-predict_with_ci <- function(new_years, model, hop, confidence = 0.95) {
+predict_with_ci <- function(new_years, model, data_frame, confidence = 0.1) {
   # Predict values
   predicted_values <- predict(model, newdata = data.frame(Year = new_years), 
                               interval = "confidence", 
@@ -39,16 +40,18 @@ predict_with_ci <- function(new_years, model, hop, confidence = 0.95) {
   # Calculate confidence intervals
   t_value <- qt((1 - confidence) / 2, df = model$df.residual)
   
-  return(data.frame(
+  col_name <- colnames(data_frame)[2]
+  
+  result_ft <- data.frame(
     Year = new_years,
-    if(hop == "housing"){
-      WMI_vals = predicted_values[, 1]
-    } else if(hop == "proportion"){
-      FP_vals = predicted_values[, 1]
-    },
+    col_name = predicted_values[, 1],
     Lower_CI = predicted_values[, 1] + t_value * pred_se,
     Upper_CI = predicted_values[, 1] - t_value * pred_se
-  ))
+  )
+  
+  names(result_ft)[2] <- col_name
+  
+  return(result_ft)
 }
 
 Predict <- function(Area_code, hop, Years, state){
@@ -111,7 +114,7 @@ Predict <- function(Area_code, hop, Years, state){
     
     # Generate future predictions
     future_years <- seq(max(Year_vect), 2025) # Hard code end year
-    future_predictions <- predict_with_ci(future_years, model, hop)
+    future_predictions <- predict_with_ci(future_years, model, FP_WMI_dataframe)
     
     # Combine historical and future data
     plot_data <- rbind(
@@ -160,9 +163,9 @@ Predict <- function(Area_code, hop, Years, state){
     
   } else if(state == "Fuel Poverty"){
     
-    FP_WMI_dataframe <- FP_WMI_dataframe[, -1] #Remove winter mortality data
+    FP_WMI_dataframe <- FP_WMI_dataframe[, -3] #Remove winter mortality data
     
-    # FP_WMI_dataframe <- FP_WMI_dataframe[-nrow(FP_WMI_dataframe), ] #Remove added 0 data point
+    # FP_WMI_dataframe <- FP_WMI_dataframe[-nrow(FP_WMI_dataframe), ]
     
     model <- lm(FP_vals ~ Year, FP_WMI_dataframe)
     
@@ -171,7 +174,7 @@ Predict <- function(Area_code, hop, Years, state){
     
     # Generate future predictions
     future_years <- seq(max(Year_vect) + 1, 2025) # Hard code end year
-    future_predictions <- predict_with_ci(future_years, model)
+    future_predictions <- predict_with_ci(future_years, model, FP_WMI_dataframe)
     
     # Combine historical and future data
     plot_data <- rbind(
@@ -183,27 +186,27 @@ Predict <- function(Area_code, hop, Years, state){
     p <- ggplot(plot_data, aes(x = Year)) +
       # Historical data points
       geom_point(data = subset(plot_data, Type == "Historical"), 
-                 aes(y = WMI_vals), color = "blue") +
+                 aes(y = FP_vals), color = "blue") +
       # Predicted data points
       geom_point(data = subset(plot_data, Type == "Predicted"), 
-                 aes(y = WMI_vals), color = "red", shape = 2) +
+                 aes(y = FP_vals), color = "red", shape = 2) +
       # Confidence interval ribbon
       geom_ribbon(data = subset(plot_data, Type == "Predicted"),
                   aes(ymin = Lower_CI, ymax = Upper_CI), 
                   fill = "red", alpha = 0.2) +
       # Regression line for historical data
       geom_smooth(data = subset(plot_data, Type == "Historical"), 
-                  aes(y = WMI_vals), 
+                  aes(y = FP_vals), 
                   method = "lm", 
                   color = "blue", 
                   se = FALSE) +
       # Prediction line
       geom_line(data = subset(plot_data, Type == "Predicted"),
-                aes(y = WMI_vals), 
+                aes(y = FP_vals), 
                 color = "red", 
                 linetype = "dashed") +
       labs(
-        title = paste("Winter Mortality Index Prediction for", Area_code),
+        title = paste("Fuel Poverty Prediction for", Area_code),
         x = "Year",
         y = paste("Fuel Poverty by ", hop)
       ) +
